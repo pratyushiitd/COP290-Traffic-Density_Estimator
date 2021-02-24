@@ -1,5 +1,13 @@
 ## Task1: Traffic density estimation using OpenCV functions
 
+### Directory Structure:
+
+- `images` folder contains images on which program to be run `empty.jpg`, `traffic.jpg`
+- `output` folder contains build file of c++ program
+- images after processing are stored in root directory
+
+### Commands:
+
 #### To Build project:
 
 ```bash
@@ -18,7 +26,7 @@ $ make run
 $ make clean
 ```
 
-Instead project can be rerun after making changes by
+Instead project can be re-run after making changes by
 
 ```bash
 $ make all

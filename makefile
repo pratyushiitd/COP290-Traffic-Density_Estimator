@@ -9,6 +9,7 @@ LIB = pkg-config --cflags --libs opencv
 
 all: clean build run
 clean:
+	@echo Removing build files
 	$(RM) -r $(BUILD_DIR)
 build:
 	mkdir $(BUILD_DIR)
