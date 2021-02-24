@@ -116,7 +116,7 @@ int main()
     imshow("Perspective Changed", img1_projected);
     imwrite("../empty_projected.jpg", img1_projected);
     imwrite("../traffic_projected.jpg", img2_projected);
-    cout << "Projected images stored \n";
+    cout << "Projected images stored as: empty_projected.jpg and traffic_projected.jpg\n";
     waitKey(0);
     destroyWindow("Perspective Changed");
     // cout << points[0].x << endl;
@@ -130,7 +130,7 @@ int main()
     imshow("Cropped", img1_cropped);
     imwrite("../empty_cropped.jpg", img1_cropped);
     imwrite("../traffic_cropped.jpg", img2_cropped);
-    cout << "Cropped images stored \n";
+    cout << "Cropped images stored as : empty_cropped.jpg and traffic_cropped.jpg\n";
     waitKey(0);
     return 0;
 }
