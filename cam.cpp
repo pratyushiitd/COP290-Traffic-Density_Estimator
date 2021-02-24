@@ -83,15 +83,15 @@ int main()
     // pts_dst.push_back(Point2f(points[3].x, points[1].y));
     // pts_dst.push_back(Point2f(points[3].x, points[0].y));
     
-    // pts_dst.push_back(Point2f((points[0].x + points[1].x) / 2, (points[0].y + points[3].y) / 2));
-    // pts_dst.push_back(Point2f((points[0].x + points[1].x) / 2, (points[1].y + points[2].y) / 2));
-    // pts_dst.push_back(Point2f((points[2].x + points[3].x) / 2, (points[1].y + points[2].y) / 2));
-    // pts_dst.push_back(Point2f((points[2].x + points[3].x) / 2, (points[0].y + points[3].y) / 2));
+    pts_dst.push_back(Point2f((points[0].x + points[1].x) / 2, (points[0].y + points[3].y) / 2));
+    pts_dst.push_back(Point2f((points[0].x + points[1].x) / 2, (points[1].y + points[2].y) / 2));
+    pts_dst.push_back(Point2f((points[2].x + points[3].x) / 2, (points[1].y + points[2].y) / 2));
+    pts_dst.push_back(Point2f((points[2].x + points[3].x) / 2, (points[0].y + points[3].y) / 2));
 
-    pts_dst.push_back(Point2f(sqrt(pow(points[0].x, 2) + pow(points[1].x, 2)) / 2, sqrt(pow(points[0].y, 2) + pow(points[3].y, 2)) / 2));
-    pts_dst.push_back(Point2f(sqrt(pow(points[0].x, 2) + pow(points[1].x, 2)) / 2, sqrt(pow(points[1].y, 2) + pow(points[2].y, 2)) / 2));
-    pts_dst.push_back(Point2f(sqrt(pow(points[2].x, 2) + pow(points[3].x, 2)) / 2, sqrt(pow(points[1].y, 2) + pow(points[2].y, 2)) / 2));
-    pts_dst.push_back(Point2f(sqrt(pow(points[2].x, 2) + pow(points[3].x, 2)) / 2, sqrt(pow(points[0].y, 2) + pow(points[3].y, 2)) / 2));
+    // pts_dst.push_back(Point2f(sqrt(pow(points[0].x, 2) + pow(points[1].x, 2)) / 2, sqrt(pow(points[0].y, 2) + pow(points[3].y, 2)) / 2));
+    // pts_dst.push_back(Point2f(sqrt(pow(points[0].x, 2) + pow(points[1].x, 2)) / 2, sqrt(pow(points[1].y, 2) + pow(points[2].y, 2)) / 2));
+    // pts_dst.push_back(Point2f(sqrt(pow(points[2].x, 2) + pow(points[3].x, 2)) / 2, sqrt(pow(points[1].y, 2) + pow(points[2].y, 2)) / 2));
+    // pts_dst.push_back(Point2f(sqrt(pow(points[2].x, 2) + pow(points[3].x, 2)) / 2, sqrt(pow(points[0].y, 2) + pow(points[3].y, 2)) / 2));
 
     Mat H = findHomography(points, pts_dst);
 
