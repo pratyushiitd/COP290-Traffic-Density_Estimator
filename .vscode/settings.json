@@ -9,6 +9,7 @@
         "utility": "cpp",
         "deque": "cpp",
         "string": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "ranges": "cpp"
     }
 }
