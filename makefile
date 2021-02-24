@@ -1,9 +1,14 @@
-run:
-	g++ test.cpp -o testoutput -std=c++11 `pkg-config --cflags --libs opencv`
-	./testoutput
-run2:
-	g++ test2.cpp -o test2output -std=c++11 `pkg-config --cflags --libs opencv`
-	./test2output
-all:
-	g++ cam.cpp -o cam -std=c++11 `pkg-config --cflags --libs opencv`
+CC = g++
+# compiler flags:
+#  -g     - this flag adds debugging information to the executable file
+#  -Wall  - this flag is used to turn on most compiler warnings
+CPPFLAGS  = -g -Wall
+TARGET = cam
+BUILD_DIR = ./outputs
+all: clean
+	mkdir $(BUILD_DIR)
+	$(CC) $(CPPFLAGS) -o ./$(BUILD)/$(TARGET) $(TARGET).cpp -std=c++11 `pkg-config --cflags --libs opencv`
+	cd $(BUILD_DIR)
 	./cam
+clean:
+	$(RM) -r $(BUILD_DIR)
