@@ -21,8 +21,8 @@ void CallBackFunc(int event, int x, int y, int flags, void *params)
 
 int main()
 {
-    string image1_path = samples::findFile("./empty.jpg");
-    string image2_path = samples::findFile("./traffic.jpg");
+    string image1_path = samples::findFile("../images/empty.jpg");
+    string image2_path = samples::findFile("../images/traffic.jpg");
 
     Mat img = imread(image1_path, IMREAD_GRAYSCALE);
     Mat img2 = imread(image2_path, IMREAD_GRAYSCALE);
@@ -57,7 +57,7 @@ int main()
     // warpPerspective(img, newimg, H, Size(1000, 1000));
     imshow("Perspective Changed", img_warp);
     imshow("Perspective Changed", img_warp2);
-    imwrite("MyImage.jpg", img_warp);
+    imwrite("../MyImage.jpg", img_warp);
     waitKey(0);
     destroyWindow("Perspective Changed");
     cout << points[0].x << endl;
