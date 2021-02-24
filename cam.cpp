@@ -1,5 +1,6 @@
 #include <iostream>
 #include "opencv2/opencv.hpp"
+#include <math.h>
 using namespace std;
 using namespace cv;
 
@@ -11,30 +12,40 @@ void CallBackFunc(int event, int x, int y, int flags, void *params)
     if (event == EVENT_LBUTTONDOWN)
     {
         vector<Point2f> *points = (vector<Point2f> *)params;
-        cout << x << " " << y << endl;
         if (points->size() < 4)
         {
             points->push_back(Point2f(x, y));
         }
     }
 }
-
-int get_quad(const Point &p1)
+int get_quad (const Point& p1)
 {
-    if (p1.x > 0 && p1.y < 0)
-        return 3;
-    else if (p1.x < 0 && p1.y < 0)
-        return 4;
-    else if (p1.x < 0 && p1.y > 0)
-        return 1;
-    return 2;
+    if (p1.x> 0 && p1.y < 0) return 4;
+    else if(p1.x < 0 && p1.y < 0) return 1;
+    else if(p1.x < 0 && p1.y > 0) return 2;
+    return 3;
 }
 
-bool compare_points(const Point &a, const Point &b)
+bool compare_points(const Point& a, const Point& b)
 {
-    return (get_quad(a) > get_quad(b));
+    return (get_quad(a) < get_quad(b));
 }
 
+vector<Point2f> sort_points (vector<Point2f> points){
+    int Mx = (points[0].x+points[1].x+points[2].x+points[3].x) / 4;
+    int My = (points[0].y+points[1].y+points[2].y+points[3].y) / 4;
+    for (int a = 0; a<4; a++){
+        points[a].x -= Mx;
+        points[a].y -= My;
+    }
+    std::sort(points.begin(), points.end(),compare_points);
+    for (int a = 0; a<4; a++){
+        points[a].x += Mx;
+        points[a].y += My;
+        cout << "(" << points[a].x << ", " << points[a].y <<")" << endl;
+    }
+    return points;
+}
 int main()
 {
     string image1_path = samples::findFile("../images/empty.jpg");
@@ -63,19 +74,24 @@ int main()
 
     // some function to make input points can be taken in any order
 
-    //
-
     destroyWindow("Display window");
+    points = sort_points(points);
     vector<Point2f> pts_dst;
     // Compressing rectangle to the width of distant width and hight of left part
-    pts_dst.push_back(Point2f(points[0].x, points[0].y));
-    pts_dst.push_back(Point2f(points[0].x, points[1].y));
-    pts_dst.push_back(Point2f(points[3].x, points[1].y));
-    pts_dst.push_back(Point2f(points[3].x, points[0].y));
+    // pts_dst.push_back(Point2f(points[0].x, points[0].y));
+    // pts_dst.push_back(Point2f(points[0].x, points[1].y));
+    // pts_dst.push_back(Point2f(points[3].x, points[1].y));
+    // pts_dst.push_back(Point2f(points[3].x, points[0].y));
+    
     // pts_dst.push_back(Point2f((points[0].x + points[1].x) / 2, (points[0].y + points[3].y) / 2));
     // pts_dst.push_back(Point2f((points[0].x + points[1].x) / 2, (points[1].y + points[2].y) / 2));
     // pts_dst.push_back(Point2f((points[2].x + points[3].x) / 2, (points[1].y + points[2].y) / 2));
     // pts_dst.push_back(Point2f((points[2].x + points[3].x) / 2, (points[0].y + points[3].y) / 2));
+
+    pts_dst.push_back(Point2f(sqrt(pow(points[0].x, 2) + pow(points[1].x, 2)) / 2, sqrt(pow(points[0].y, 2) + pow(points[3].y, 2)) / 2));
+    pts_dst.push_back(Point2f(sqrt(pow(points[0].x, 2) + pow(points[1].x, 2)) / 2, sqrt(pow(points[1].y, 2) + pow(points[2].y, 2)) / 2));
+    pts_dst.push_back(Point2f(sqrt(pow(points[2].x, 2) + pow(points[3].x, 2)) / 2, sqrt(pow(points[1].y, 2) + pow(points[2].y, 2)) / 2));
+    pts_dst.push_back(Point2f(sqrt(pow(points[2].x, 2) + pow(points[3].x, 2)) / 2, sqrt(pow(points[0].y, 2) + pow(points[3].y, 2)) / 2));
 
     Mat H = findHomography(points, pts_dst);
 
