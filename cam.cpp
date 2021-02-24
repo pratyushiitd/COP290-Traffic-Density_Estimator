@@ -33,31 +33,34 @@ int main()
     }
     imshow("Display window", img);
     vector<Point2f> points;
-    setMouseCallback("Display window", CallBackFunc, &points);
-    waitKey(0);
+    while (points.size() < 4)
+    {
+        setMouseCallback("Display window", CallBackFunc, &points);
+        waitKey(1000);
+    }
+
     destroyWindow("Display window");
     vector<Point2f> pts_dst;
 
-    pts_dst.push_back(Point2f(0, 0));
-    pts_dst.push_back(Point2f(0, img.size().height - 1));
-    pts_dst.push_back(Point2f(img.size().width - 1, img.size().height - 1));
-    pts_dst.push_back(Point2f(img.size().width - 1, 0));
+    pts_dst.push_back(Point2f(points[0].x, points[0].y));
+    pts_dst.push_back(Point2f(points[1].x, points[1].y));
+    pts_dst.push_back(Point2f(points[2].x, points[1].y));
+    pts_dst.push_back(Point2f(points[3].x, points[0].y));
 
     Mat H = findHomography(points, pts_dst);
 
     cout << H << endl;
     Mat img_warp;
-    
+
     // Rect br = boundingRect(outputCorners);
     warpPerspective(img, img_warp, H, img.size());
     // warpPerspective(img, newimg, H, Size(1000, 1000));
-    imshow("Perspective Changed", newimg);
-    imwrite("MyImage.jpg", newimg);
+    imshow("Perspective Changed", img_warp);
+    imwrite("MyImage.jpg", img_warp);
     waitKey(0);
     destroyWindow("Perspective Changed");
     cout << points[0].x << endl;
     //Cropping
-    
 
     return 0;
 }
