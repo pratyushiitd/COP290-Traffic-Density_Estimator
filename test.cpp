@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 {
 
     // Read source image.
-    Mat im_src = imread("book1.jpg");
+    Mat im_src = imread("./empty.jpg");
 
     // Destination image. The aspect ratio of the book is 3/4
     Size size(300, 400);

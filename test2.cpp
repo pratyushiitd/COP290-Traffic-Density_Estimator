@@ -24,7 +24,7 @@ void CallBackFunc(int event, int x, int y, int flags, void *params)
 
 int main()
 {
-    string image_path = samples::findFile("./book1.jpg");
+    string image_path = samples::findFile("./empty.jpg");
     Mat img = imread(image_path, IMREAD_COLOR);
     if (img.empty())
     {
@@ -38,15 +38,40 @@ int main()
     vector<Point2f> pts_dst;
 
     pts_dst.push_back(Point2f(0, 0));
-    pts_dst.push_back(Point2f(img.size().width - 1, 0));
-    pts_dst.push_back(Point2f(img.size().width - 1, img.size().height - 1));
     pts_dst.push_back(Point2f(0, img.size().height - 1));
+    pts_dst.push_back(Point2f(img.size().width - 1, img.size().height - 1));
+
+    pts_dst.push_back(Point2f(img.size().width - 1, 0));
 
     Mat H = findHomography(points, pts_dst);
+    // Normalization to ensure that ||c1|| = 1
+    // double norm = sqrt(H.at<double>(0, 0) * H.at<double>(0, 0) +
+    //                    H.at<double>(1, 0) * H.at<double>(1, 0) +
+    //                    H.at<double>(2, 0) * H.at<double>(2, 0));
+    // H /= norm;
+    // Mat c1 = H.col(0);
+    // Mat c2 = H.col(1);
+    // Mat c3 = c1.cross(c2);
+    // Mat tvec = H.col(2);
+    // Mat R(3, 3, CV_64F);
+    // for (int i = 0; i < 3; i++)
+    // {
+    //     R.at<double>(i, 0) = c1.at<double>(i, 0);
+    //     R.at<double>(i, 1) = c2.at<double>(i, 0);
+    //     R.at<double>(i, 2) = c3.at<double>(i, 0);
+    // }
     cout << H << endl;
     Mat newimg;
+    for (size_t i = 0; i < points.size(); i++)
+    {
+        Mat pt1 = (Mat_<double>(3, 1) << points[i].x, points[i].y, 1);
+        Mat pt2 = H * pt1;
+    }
+    // Rect br = boundingRect(outputCorners);
     warpPerspective(img, newimg, H, img.size());
+    // warpPerspective(img, newimg, H, Size(1000, 1000));
     imshow("test", newimg);
+    imwrite("MyImage.jpg", newimg);
     waitKey(0);
     cout << points[0].x << endl;
 
