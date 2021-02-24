@@ -1,5 +1,12 @@
 ## Task1: Traffic density estimation using OpenCV functions
 
+git repo:
+
+```
+git clone https://github.com/anirudhakulkarni/COP290-A1.git
+
+```
+
 ### Directory Structure:
 
 - `images` folder contains images on which program to be run `empty.jpg`, `traffic.jpg`
