@@ -1,8 +1,10 @@
 #include <iostream>
 #include "opencv2/opencv.hpp"
 #include <math.h>
+#include <chrono>
 using namespace std;
 using namespace cv;
+using namespace std::chrono;
 void CallBackFunc(int event, int x, int y, int flags, void *params)
 {
     if (event == EVENT_LBUTTONDOWN)
@@ -51,6 +53,7 @@ vector<Point2f> sort_points(vector<Point2f> points)
 
 int main(int argc, char const *argv[])
 {
+
     string image1_path = samples::findFile("../assets/empty.jpg");
 
     Mat img1 = imread(image1_path, IMREAD_GRAYSCALE);
@@ -83,30 +86,41 @@ int main(int argc, char const *argv[])
         cout << "Error opening video stream or file" << endl;
         return -1;
     }
+    int framec = 0;
+    auto start = high_resolution_clock::now();
 
     while (1)
     {
 
         Mat frame;
+        framec++;
         // Capture frame-by-frame
+        if (framec % 1000 == 0)
+        {
+            cout << framec << endl;
+        }
         cap >> frame;
+        if (frame.empty())
+            break;
         warpPerspective(frame, frame, H, frame.size());
         frame = frame(crop_region);
         // If the frame is empty, break immediately
-        if (frame.empty())
-            break;
 
         // Display the resulting frame
-        imshow("Frame", frame);
+        // imshow("Frame", frame);
 
-        // Press  ESC on keyboard to exit
-        char c = (char)waitKey(25);
-        if (c == 27)
-            break;
+        // // Press  ESC on keyboard to exit
+        // char c = (char)waitKey(20);
+        // if (c == 27)
+        //     break;
     }
-
+    auto stop = high_resolution_clock::now();
     // When everything done, release the video capture object
     cap.release();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "Time taken by function: "
+         << duration.count() << " microseconds" << endl;
 
     // Closes all the frames
     destroyAllWindows();
