@@ -72,7 +72,7 @@ vector<Point2f> sort_points(vector<Point2f> points)
 
 int main(int argc, char const *argv[])
 {
-    string image1_path = samples::findFile("empty.jpg");
+    string image1_path = samples::findFile("../assets/empty.jpg");
 
     Mat img1 = imread(image1_path, IMREAD_GRAYSCALE);
     namedWindow("Display window", WINDOW_NORMAL);
@@ -96,7 +96,7 @@ int main(int argc, char const *argv[])
     Mat H = findHomography(points, pts_dst);
     Rect crop_region(points[0].x, points[0].y, points[3].x - points[0].x, points[1].y - points[0].y);
 
-    string vid_path = "trafficvideo.mp4";
+    string vid_path = "../assets/mock.mp4";
 
     VideoCapture capture(samples::findFile(vid_path));
 
@@ -113,23 +113,38 @@ int main(int argc, char const *argv[])
 
     int framec = 0;
 
-    Mat frame, frame1, fgMask, prvs;
+    Mat frame, fgMask, prvs;
+    Mat frame1;
     capture >> frame1;
     warpPerspective(frame1, frame1, H, frame.size());
     frame1 = frame1(crop_region);
-    cvtColor(frame1, prvs, COLOR_BGR2GRAY);
-    vector<double> queue_y;
+    vector<int> queue_y;
+    vector<int> dynamic_y;
     warpPerspective(img1, img1, H, img1.size());
     frame = img1(crop_region);
+    cvtColor(frame1, prvs, COLOR_BGR2GRAY);
+    obj_back->apply(frame, fgMask, 0);
+    VideoWriter videoout("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, frame.size());
+
     auto start = high_resolution_clock::now();
     while (true)
     {
+        // DEBUGGER
+        if (framec == 200)
+        {
+            break;
+        }
+        //
+
         framec++;
         // Capture frame-by-frame
-        // if (framec % 1000 == 0)
-        // {
-        //     cout << framec << endl;
-        // }
+        if (framec % 100 == 0)
+        {
+            cout << framec << endl;
+        }
+
+        framec++;
+        // if (framec % 1000 == 0){cout << framec << endl;}
         capture >> frame;
         if (frame.empty())
             break;
@@ -137,58 +152,81 @@ int main(int argc, char const *argv[])
         frame = frame(crop_region);
         // Display the resulting frame
         // imshow("Frame", frame);
-
-        // capture >> frame;
-        // if (frame.empty()){
-        //     break;
-        // }
         obj_back->apply(frame, fgMask, 0); //Learning rate set to 0
 
+        //====================================================================================
+        //Display white ratio in white box on top left corner for masked frames
         rectangle(frame, cv::Point(10, 2), cv::Point(100, 20), cv::Scalar(255, 255, 255), -1); //Display white ratio on top left corner
         stringstream ss;
         //ss << capture.get(CAP_PROP_POS_FRAMES); //0-based index of the frame to be decoded/captured next.
         vector<Point> white_pixels;
         cv::findNonZero(fgMask, white_pixels);
         //ss << capture.get(CAP_PROP_POS_FRAMES);
-        int white_ratio = ((white_pixels.size()) * 1000) / (fgMask.cols * fgMask.rows);
+        int white_ratio = ((white_pixels.size()) * 1000.0) / (fgMask.cols * fgMask.rows);
         ss << white_ratio;
         queue_y.push_back(white_ratio);
         white_pixels.clear();
         string frameNumberString = ss.str();
         putText(frame, frameNumberString.c_str(), cv::Point(45, 15),
                 FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
-        // cv::Mat diff;
-        // cv::absdiff(frame, img1, diff);
 
-        imshow("Original Frame", frame);
-        imshow("Foreground Mask", fgMask);
-
-        //Mat frame2, next;
+        //==================================================================================
+        //Optical Flow Evaluation
         Mat next;
-        // capture >> frame2;
-        // if (frame2.empty())
-        //     break;
         cvtColor(frame, next, COLOR_BGR2GRAY);
         Mat flow(prvs.size(), CV_32FC2);
-        calcOpticalFlowFarneback(prvs, next, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
+        calcOpticalFlowFarneback(prvs, next, flow, 0.5, 3, 15, 3, 7, 1.5, 0);
         // visualization
         Mat flow_parts[2];
         split(flow, flow_parts);
+
+        //flow parts[0] has x coordinates of pixel displacement vectors
+        //flow parts[1] has y coordinates of pixel displacement vectors
         Mat magnitude, angle, magn_norm;
+
+        //magnitude and angle calculation using x and y coordinate vectors
+        //angle in degrees is set to true
         cartToPolar(flow_parts[0], flow_parts[1], magnitude, angle, true);
+
+        //normalize the magnitude Matrix and output into magn_norm Matrix
+        // Min = 0 and Max = 1
         normalize(magnitude, magn_norm, 0.0f, 1.0f, NORM_MINMAX);
+
         angle *= ((1.f / 360.f) * (180.f / 255.f));
         //build hsv image
-        Mat _hsv[3], hsv, hsv8, bgr;
+        Mat _hsv[3], hsv, hsv8, bgr, gry;
         _hsv[0] = angle;
         _hsv[1] = Mat::ones(angle.size(), CV_32F);
         _hsv[2] = magn_norm;
         merge(_hsv, 3, hsv);
         hsv.convertTo(hsv8, CV_8U, 255.0);
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
-        imshow("Optical Flow", bgr);
+        cvtColor(bgr, gry, COLOR_BGR2GRAY);
         //imshow("Optical Flow", hsv8);
 
+        //====================================================================================
+        //Display white ratio in white box on top left corner for optical flow frame
+        vector<Point> white_pixels_dyn;
+        cv::findNonZero(gry, white_pixels_dyn);
+
+        int white_ratio_dyn = ((white_pixels_dyn.size()) * 1000.0) / (gry.cols * gry.rows);
+        stringstream sst;
+        sst << white_ratio_dyn;
+        dynamic_y.push_back(white_ratio_dyn);
+        white_pixels_dyn.clear();
+        rectangle(frame, cv::Point(10, 30), cv::Point(100, 48), cv::Scalar(255, 255, 255), -1); //Display white ratio on top left corner
+
+        frameNumberString = sst.str();
+        putText(frame, frameNumberString.c_str(), cv::Point(45, 43),
+                FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
+        //=====================================================================================
+
+        imshow("Optical Flow", gry);
+        imshow("Original Frame", frame);
+        imshow("Foreground Mask", fgMask);
+        videoout.write(frame);
+
+        prvs = next;
         int keyboard = waitKey(30);
         if (keyboard == 27)
             break;
@@ -200,6 +238,9 @@ int main(int argc, char const *argv[])
     cout << "Time taken by function: "
          << duration.count() / 1000000.0 << " seconds" << endl;
     // Closes all the frames
+
+    //Now we have vector<int> queue_y and vector<int> dynamic_y, Plot the coordinates.
+
     destroyAllWindows();
     return 0;
 }

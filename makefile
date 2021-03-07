@@ -31,3 +31,4 @@ run:
 test:
 	$(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TEMP) $(TEMP).cpp -std=c++11 `$(LIB)`
 	cd $(BUILD_DIR); ./$(TEMP)
+.PHONY: test
