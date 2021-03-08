@@ -8,8 +8,6 @@
 #include <opencv2/video.hpp>
 #include <math.h>
 #include <chrono>
-//#include "matplotlibcpp.h"
-
 using namespace std;
 using namespace cv;
 using namespace std::chrono;
@@ -40,16 +38,6 @@ bool compare_points(const Point &a, const Point &b)
 {
     return (get_quad(a) < get_quad(b));
 }
-
-// int calcPercentage(Mat msk){
-// 	int height = msk::rows;
-//     int width = msk::cols;
-// 	int num_pixels = height * width;
-// 	int count_white = cv2::countNonZero(msk);
-// 	int percent_white = (count_white*100/num_pixels);
-
-// 	return percent_white;
-// }
 
 vector<Point2f> sort_points(vector<Point2f> points)
 {
@@ -96,7 +84,7 @@ int main(int argc, char const *argv[])
     Mat H = findHomography(points, pts_dst);
     Rect crop_region(points[0].x, points[0].y, points[3].x - points[0].x, points[1].y - points[0].y);
 
-    string vid_path = "../assets/mock.mp4";
+    string vid_path = "../assets/short.mp4";
 
     VideoCapture capture(samples::findFile(vid_path));
     int noOfFrames = capture.get(CAP_PROP_FRAME_COUNT);
@@ -139,13 +127,15 @@ int main(int argc, char const *argv[])
         //
 
         framec++;
-        if (framec == capture.get(CAP_PROP_FRAME_COUNT))
-        {
-        }
-        else
+        if (framec < capture.get(CAP_PROP_FRAME_COUNT) - 1)
         {
             cout << framec << ",";
         }
+        else if (framec == capture.get(CAP_PROP_FRAME_COUNT) - 1)
+        {
+            cout << framec;
+        }
+
         // Capture frame-by-frame
         // if (framec % 1000 == 0){cout << framec << endl;}
         capture >> frame;
@@ -193,8 +183,8 @@ int main(int argc, char const *argv[])
 
         //normalize the magnitude Matrix and output into magn_norm Matrix
         // Min = 0 and Max = 1
-        normalize(magnitude,temp, 0.0f, 1.0f, NORM_MINMAX);
-        threshold(temp, magn_norm,0.4f,1.0f, THRESH_BINARY);
+        normalize(magnitude, temp, 0.0f, 1.0f, NORM_MINMAX);
+        threshold(temp, magn_norm, 0.4f, 1.0f, THRESH_BINARY);
         //threshold(gr_bt, magn_norm,0.8,1.0, THRESH_BINARY);
         angle *= ((1.f / 360.f) * (180.f / 255.f));
         //build hsv image
@@ -206,7 +196,7 @@ int main(int argc, char const *argv[])
         hsv.convertTo(hsv8, CV_8U, 255.0);
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
         cvtColor(bgr, gr_bt, COLOR_BGR2GRAY);
-        threshold(gr_bt, gry,5,255, THRESH_BINARY);
+        threshold(gr_bt, gry, 5, 255, THRESH_BINARY);
         //imshow("Optical Flow", hsv8);
 
         //====================================================================================
@@ -226,22 +216,22 @@ int main(int argc, char const *argv[])
                 FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         //=====================================================================================
 
-        imshow("Optical Flow", gry);
-        imshow("Original Frame", frame);
-        imshow("Foreground Mask", fgMask);
-        // videoout.write(frame);
+        // imshow("Optical Flow", gry);
+        // imshow("Original Frame", frame);
+        // imshow("Foreground Mask", fgMask);
+        // // videoout.write(frame);
 
+        // int keyboard = waitKey(1);
+        // if (keyboard == 27)
+        //     break;
         prvs = next;
-        int keyboard = waitKey(1);
-        if (keyboard == 27)
-            break;
     }
     auto stop = high_resolution_clock::now();
     // When everything done, release the video capture object
     capture.release();
     auto duration = duration_cast<microseconds>(stop - start);
-    cout << "Time taken by function: "
-         << duration.count() / 1000000.0 << " seconds" << endl;
+    // cout << "Time taken by function: "
+    //      << duration.count() / 1000000.0 << " seconds" << endl;
     // Closes all the frames
 
     //Now we have vector<int> queue_y and vector<int> dynamic_y, Plot the coordinates.
@@ -250,20 +240,21 @@ int main(int argc, char const *argv[])
     {
         if (i == queue_y.size() - 1)
         {
-            cout << queue_y[i];
+            cout << queue_y[i] / 1000.0;
             break;
         }
-        cout << queue_y[i] << ",";
+
+        cout << queue_y[i] / 1000.0 << ",";
     }
     freopen("../outputs/dynamic.out", "w", stdout);
     for (int i = 0; i < dynamic_y.size(); i++)
     {
         if (i == dynamic_y.size() - 1)
         {
-            cout << dynamic_y[i];
+            cout << dynamic_y[i] / 1000.0;
             break;
         }
-        cout << dynamic_y[i] << ",";
+        cout << dynamic_y[i] / 1000.0 << ",";
     }
 
     destroyAllWindows();
