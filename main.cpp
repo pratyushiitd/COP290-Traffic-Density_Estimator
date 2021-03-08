@@ -72,8 +72,8 @@ vector<Point2f> sort_points(vector<Point2f> points)
 
 int main(int argc, char const *argv[])
 {
-    string image1_path = samples::findFile("../assets/empty.jpg");
 
+    string image1_path = samples::findFile("../assets/empty.jpg");
     Mat img1 = imread(image1_path, IMREAD_GRAYSCALE);
     namedWindow("Display window", WINDOW_NORMAL);
     resizeWindow("Display window", 1000, 1000);
@@ -99,6 +99,7 @@ int main(int argc, char const *argv[])
     string vid_path = "../assets/mock.mp4";
 
     VideoCapture capture(samples::findFile(vid_path));
+    int noOfFrames = capture.get(CAP_PROP_FRAME_COUNT);
 
     if (!capture.isOpened())
     {
@@ -108,7 +109,7 @@ int main(int argc, char const *argv[])
     }
     Ptr<BackgroundSubtractor> obj_back; //create Background Subtractor object
 
-    obj_back = createBackgroundSubtractorMOG2(1, 100.0, false); // (History, threshold, detech_shadows = false)
+    obj_back = createBackgroundSubtractorMOG2(1, 350, false); // (History, threshold, detech_shadows = false)
     //obj_back = createBackgroundSubtractorKNN();
 
     int framec = 0;
@@ -124,26 +125,28 @@ int main(int argc, char const *argv[])
     frame = img1(crop_region);
     cvtColor(frame1, prvs, COLOR_BGR2GRAY);
     obj_back->apply(frame, fgMask, 0);
-    VideoWriter videoout("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, frame.size());
+    // VideoWriter videoout("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, frame.size());
+    freopen("../outputs/frames.out", "w", stdout);
 
     auto start = high_resolution_clock::now();
     while (true)
     {
         // DEBUGGER
-        if (framec == 200)
+        if (framec == 200000)
         {
             break;
         }
         //
 
         framec++;
-        // Capture frame-by-frame
-        if (framec % 100 == 0)
+        if (framec == capture.get(CAP_PROP_FRAME_COUNT))
         {
-            cout << framec << endl;
         }
-
-        framec++;
+        else
+        {
+            cout << framec << ",";
+        }
+        // Capture frame-by-frame
         // if (framec % 1000 == 0){cout << framec << endl;}
         capture >> frame;
         if (frame.empty())
@@ -224,10 +227,10 @@ int main(int argc, char const *argv[])
         imshow("Optical Flow", gry);
         imshow("Original Frame", frame);
         imshow("Foreground Mask", fgMask);
-        videoout.write(frame);
+        // videoout.write(frame);
 
         prvs = next;
-        int keyboard = waitKey(30);
+        int keyboard = waitKey(1);
         if (keyboard == 27)
             break;
     }
@@ -240,6 +243,26 @@ int main(int argc, char const *argv[])
     // Closes all the frames
 
     //Now we have vector<int> queue_y and vector<int> dynamic_y, Plot the coordinates.
+    freopen("../outputs/static.out", "w", stdout);
+    for (int i = 0; i < queue_y.size(); i++)
+    {
+        if (i == queue_y.size() - 1)
+        {
+            cout << queue_y[i];
+            break;
+        }
+        cout << queue_y[i] << ",";
+    }
+    freopen("../outputs/dynamic.out", "w", stdout);
+    for (int i = 0; i < dynamic_y.size(); i++)
+    {
+        if (i == dynamic_y.size() - 1)
+        {
+            cout << dynamic_y[i];
+            break;
+        }
+        cout << dynamic_y[i] << ",";
+    }
 
     destroyAllWindows();
     return 0;

@@ -31,4 +31,7 @@ run:
 test:
 	$(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TEMP) $(TEMP).cpp -std=c++11 `$(LIB)`
 	cd $(BUILD_DIR); ./$(TEMP)
+check:
+	pip3 install -r requirements.txt
+	python3 plot.py
 .PHONY: test

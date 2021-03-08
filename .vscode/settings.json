@@ -57,6 +57,10 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "thread": "cpp",
-        "typeinfo": "cpp"
-    }
+        "typeinfo": "cpp",
+        "bitset": "cpp",
+        "regex": "cpp",
+        "valarray": "cpp"
+    },
+    "python.pythonPath": "/bin/python3"
 }
