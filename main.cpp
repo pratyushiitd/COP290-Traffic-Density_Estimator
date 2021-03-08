@@ -185,7 +185,7 @@ int main(int argc, char const *argv[])
 
         //flow parts[0] has x coordinates of pixel displacement vectors
         //flow parts[1] has y coordinates of pixel displacement vectors
-        Mat magnitude, angle, magn_norm;
+        Mat magnitude, angle, magn_norm, gr_bt, temp;
 
         //magnitude and angle calculation using x and y coordinate vectors
         //angle in degrees is set to true
@@ -193,8 +193,9 @@ int main(int argc, char const *argv[])
 
         //normalize the magnitude Matrix and output into magn_norm Matrix
         // Min = 0 and Max = 1
-        normalize(magnitude, magn_norm, 0.0f, 1.0f, NORM_MINMAX);
-
+        normalize(magnitude,temp, 0.0f, 1.0f, NORM_MINMAX);
+        threshold(temp, magn_norm,0.4f,1.0f, THRESH_BINARY);
+        //threshold(gr_bt, magn_norm,0.8,1.0, THRESH_BINARY);
         angle *= ((1.f / 360.f) * (180.f / 255.f));
         //build hsv image
         Mat _hsv[3], hsv, hsv8, bgr, gry;
@@ -204,7 +205,8 @@ int main(int argc, char const *argv[])
         merge(_hsv, 3, hsv);
         hsv.convertTo(hsv8, CV_8U, 255.0);
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
-        cvtColor(bgr, gry, COLOR_BGR2GRAY);
+        cvtColor(bgr, gr_bt, COLOR_BGR2GRAY);
+        threshold(gr_bt, gry,5,255, THRESH_BINARY);
         //imshow("Optical Flow", hsv8);
 
         //====================================================================================
