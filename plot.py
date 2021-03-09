@@ -1,10 +1,14 @@
+import subprocess
+import sys
 try:
     from scipy.signal import savgol_filter
     from matplotlib import pyplot as plt
+    print(99)
 except:
     print("Some dependencies are missing...\nInstalling required modules...")
-    import pip
-    pip.main(['install', '-r', 'requirements.txt'])
+    subprocess.call(['pip', 'install','-r', 'requirements.txt'])
+    # import pip
+    # pip.main(['install', '-r', 'requirements.txt'])
     from scipy.signal import savgol_filter
     from matplotlib import pyplot as plt
 

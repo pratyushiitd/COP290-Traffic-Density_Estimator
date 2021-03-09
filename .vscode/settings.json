@@ -60,7 +60,9 @@
         "typeinfo": "cpp",
         "bitset": "cpp",
         "regex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "future": "cpp",
+        "variant": "cpp"
     },
     "python.pythonPath": "/bin/python3"
 }

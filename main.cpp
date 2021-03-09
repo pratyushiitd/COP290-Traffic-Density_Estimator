@@ -84,7 +84,7 @@ int main(int argc, char const *argv[])
     Mat H = findHomography(points, pts_dst);
     Rect crop_region(points[0].x, points[0].y, points[3].x - points[0].x, points[1].y - points[0].y);
 
-    string vid_path = "../assets/short.mp4";
+    string vid_path = "../assets/mock.mp4";
 
     VideoCapture capture(samples::findFile(vid_path));
     int noOfFrames = capture.get(CAP_PROP_FRAME_COUNT);
@@ -95,31 +95,34 @@ int main(int argc, char const *argv[])
         cout << "Could not open file: " << vid_path << endl;
         return 0;
     }
-    Ptr<BackgroundSubtractor> obj_back; //create Background Subtractor object
-
-    obj_back = createBackgroundSubtractorMOG2(1, 350, false); // (History, threshold, detech_shadows = false)
+    Ptr<BackgroundSubtractor> obj_back;                       //create Background Subtractor object
+    obj_back = createBackgroundSubtractorMOG2(0, 350, false); // (History, threshold, detech_shadows = false)
     //obj_back = createBackgroundSubtractorKNN();
 
     int framec = 0;
 
     Mat frame, fgMask, prvs;
     Mat frame1;
+    vector<int> queue_y;
+    vector<int> dynamic_y;
+    freopen("../outputs/frames.out", "w", stdout);
+
     capture >> frame1;
     warpPerspective(frame1, frame1, H, frame.size());
     frame1 = frame1(crop_region);
-    vector<int> queue_y;
-    vector<int> dynamic_y;
-    warpPerspective(img1, img1, H, img1.size());
-    frame = img1(crop_region);
     cvtColor(frame1, prvs, COLOR_BGR2GRAY);
-    obj_back->apply(frame, fgMask, 0);
+    warpPerspective(img1, img1, H, img1.size());
+    frame1 = img1;
+    // frame = img1(crop_region);
+    // obj_back->apply(frame, frame, 0);
+    double fps = capture.get(CAP_PROP_FPS);
     // VideoWriter videoout("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, frame.size());
-    freopen("../outputs/frames.out", "w", stdout);
 
     auto start = high_resolution_clock::now();
     while (true)
     {
         // DEBUGGER
+
         if (framec == 200000)
         {
             break;
@@ -138,13 +141,15 @@ int main(int argc, char const *argv[])
 
         // Capture frame-by-frame
         // if (framec % 1000 == 0){cout << framec << endl;}
-        capture >> frame;
+        capture.read(frame);
         if (frame.empty())
             break;
+
         warpPerspective(frame, frame, H, frame.size());
         frame = frame(crop_region);
         // Display the resulting frame
         // imshow("Frame", frame);
+        fgMask = img1;
         obj_back->apply(frame, fgMask, 0); //Learning rate set to 0
 
         //====================================================================================
@@ -216,14 +221,14 @@ int main(int argc, char const *argv[])
                 FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         //=====================================================================================
 
-        // imshow("Optical Flow", gry);
-        // imshow("Original Frame", frame);
-        // imshow("Foreground Mask", fgMask);
-        // // videoout.write(frame);
+        imshow("Optical Flow", gry);
+        imshow("Original Frame", frame);
+        imshow("Foreground Mask", fgMask);
+        // videoout.write(frame);
 
-        // int keyboard = waitKey(1);
-        // if (keyboard == 27)
-        //     break;
+        int keyboard = waitKey(1);
+        if (keyboard == 27)
+            break;
         prvs = next;
     }
     auto stop = high_resolution_clock::now();

@@ -9,9 +9,9 @@ git clone https://github.com/anirudhakulkarni/COP290-A1.git
 
 ### Directory Structure:
 
-- `images` folder contains images on which program to be run `empty.jpg`, `traffic.jpg`
-- `output` folder contains build file of c++ program
-- images after processing are stored in root directory
+- `assets` folder contains images on which program to be run `empty.jpg`, `traffic.jpg`
+- `build` folder stores build file of c++ program and stackdumps
+- `output` folder stores all the graphs and data points to be plot
 
 ### Commands:
 
@@ -25,6 +25,12 @@ $ make build
 
 ```bash
 $ make run
+```
+
+#### To Plot:
+
+```bash
+$ make plot
 ```
 
 #### To clean:
