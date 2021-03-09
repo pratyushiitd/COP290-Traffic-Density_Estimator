@@ -96,7 +96,7 @@ int main(int argc, char const *argv[])
     Mat H = findHomography(points, pts_dst);
     Rect crop_region(points[0].x, points[0].y, points[3].x - points[0].x, points[1].y - points[0].y);
 
-    string vid_path = "../assets/mock.mp4";
+    string vid_path = "../assets/trafficvideo.mp4";
 
     VideoCapture capture(samples::findFile(vid_path));
     int noOfFrames = capture.get(CAP_PROP_FRAME_COUNT);
@@ -122,9 +122,11 @@ int main(int argc, char const *argv[])
     vector<int> queue_y;
     vector<int> dynamic_y;
     warpPerspective(img1, img1, H, img1.size());
-    frame = img1(crop_region);
+    img1 = img1(crop_region);
+    //warpPerspective(fgMask, fgMask, H, fgMask.size());
+    //fgMask = fgMask(crop_region);
     cvtColor(frame1, prvs, COLOR_BGR2GRAY);
-    obj_back->apply(frame, fgMask, 0);
+    obj_back->apply(img1, fgMask, 0);
     // VideoWriter videoout("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, frame.size());
     freopen("../outputs/frames.out", "w", stdout);
 
@@ -132,9 +134,11 @@ int main(int argc, char const *argv[])
     while (true)
     {
         // DEBUGGER
-        if (framec == 200000)
+        capture >> frame;
+        if (framec % 5 != 0)
         {
-            break;
+            framec++;
+            continue;
         }
         //
 
@@ -146,9 +150,9 @@ int main(int argc, char const *argv[])
         {
             cout << framec << ",";
         }
+        cout << 0;
         // Capture frame-by-frame
         // if (framec % 1000 == 0){cout << framec << endl;}
-        capture >> frame;
         if (frame.empty())
             break;
         warpPerspective(frame, frame, H, frame.size());
@@ -156,7 +160,6 @@ int main(int argc, char const *argv[])
         // Display the resulting frame
         // imshow("Frame", frame);
         obj_back->apply(frame, fgMask, 0); //Learning rate set to 0
-
         //====================================================================================
         //Display white ratio in white box on top left corner for masked frames
         rectangle(frame, cv::Point(10, 2), cv::Point(100, 20), cv::Scalar(255, 255, 255), -1); //Display white ratio on top left corner
@@ -193,8 +196,8 @@ int main(int argc, char const *argv[])
 
         //normalize the magnitude Matrix and output into magn_norm Matrix
         // Min = 0 and Max = 1
-        normalize(magnitude,temp, 0.0f, 1.0f, NORM_MINMAX);
-        threshold(temp, magn_norm,0.4f,1.0f, THRESH_BINARY);
+        normalize(magnitude,magn_norm, 0.0f, 1.0f, NORM_MINMAX);
+        //threshold(temp, magn_norm,0.25f,1.0f, THRESH_BINARY);
         //threshold(gr_bt, magn_norm,0.8,1.0, THRESH_BINARY);
         angle *= ((1.f / 360.f) * (180.f / 255.f));
         //build hsv image
@@ -206,7 +209,7 @@ int main(int argc, char const *argv[])
         hsv.convertTo(hsv8, CV_8U, 255.0);
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
         cvtColor(bgr, gr_bt, COLOR_BGR2GRAY);
-        threshold(gr_bt, gry,5,255, THRESH_BINARY);
+        threshold(gr_bt, gry,15,255, THRESH_BINARY);
         //imshow("Optical Flow", hsv8);
 
         //====================================================================================
@@ -229,19 +232,18 @@ int main(int argc, char const *argv[])
         imshow("Optical Flow", gry);
         imshow("Original Frame", frame);
         imshow("Foreground Mask", fgMask);
-        // videoout.write(frame);
+        //videoout.write(frame);
 
-        prvs = next;
-        int keyboard = waitKey(1);
-        if (keyboard == 27)
+        int keyboard = waitKey(30);
+        if (keyboard == 27 || keyboard == 'q')
             break;
+        prvs = next;
     }
     auto stop = high_resolution_clock::now();
     // When everything done, release the video capture object
     capture.release();
     auto duration = duration_cast<microseconds>(stop - start);
-    cout << "Time taken by function: "
-         << duration.count() / 1000000.0 << " seconds" << endl;
+    //cout << "Time taken by function: "<< duration.count() / 1000000.0 << " seconds" << endl;
     // Closes all the frames
 
     //Now we have vector<int> queue_y and vector<int> dynamic_y, Plot the coordinates.
