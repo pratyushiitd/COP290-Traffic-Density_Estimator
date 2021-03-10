@@ -52,11 +52,11 @@ for i in range(lenOfArr):
         f.write(", "+str(val))
 f.close()
 # print arrays for debugging
-print(framesArray)
-print(dynamicArray)
-print(staticArray)
 print(len(framesArray))
 print(len(dynamicArray))
 print(len(staticArray))
+
+for i in range(lenOfArr):
+    print(framesArray[i], ",", staticArray[i], ",", dynamicArray[i])
 # Plot
 plotter(framesArray, staticArray, savgol_filter(dynamicArray, 17, 2), "Plot")
