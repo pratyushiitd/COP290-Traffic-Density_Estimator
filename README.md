@@ -1,10 +1,11 @@
 ## Task1: Traffic density estimation using OpenCV functions
 
-git repo:
+Clone the repo to run locally:
 
 ```
 git clone https://github.com/anirudhakulkarni/COP290-A1.git
 
+cd COP290-A1
 ```
 
 ### Directory Structure:

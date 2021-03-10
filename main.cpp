@@ -105,7 +105,7 @@ int main(int argc, char const *argv[])
     Mat frame1;
     vector<int> queue_y;
     vector<int> dynamic_y;
-    freopen("../outputs/frames.out", "w", stdout);
+    // freopen("../outputs/frames.out", "w", stdout);
 
     capture >> frame1;
     warpPerspective(frame1, frame1, H, frame.size());
@@ -120,6 +120,14 @@ int main(int argc, char const *argv[])
     obj_back->apply(frame, fgMask, 1);
     double fps = capture.get(CAP_PROP_FPS);
     // VideoWriter videoout("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, frame.size());
+    double timeOfVid = noOfFrames / fps;
+    // cout << timeOfVid << endl;
+    int processf = 5;
+    // cout << 1;
+    // for (int i = 0; i < timeOfVid; i++)
+    // {
+    //     cout << ", " << i;
+    // }
 
     auto start = high_resolution_clock::now();
     while (true)
@@ -128,26 +136,26 @@ int main(int argc, char const *argv[])
         capture.read(frame);
         if (frame.empty())
             break;
-        if (framec % 5 != 0)
+        if (framec % processf != 0)
         {
             framec++;
             continue;
         }
-        if (framec == 200000)
+        if (framec == 999999)
         {
             break;
         }
         //
-
-        framec++;
-        if (framec == 1)
-        {
-            cout << framec;
-        }
-        else
-        {
-            cout << "," << framec;
-        }
+        //frames array
+        // framec++;
+        // if (framec == 1)
+        // {
+        //     cout << framec;
+        // }
+        // else
+        // {
+        //     cout << "," << framec;
+        // }
 
         // Capture frame-by-frame
         // if (framec % 1000 == 0){cout << framec << endl;}
@@ -228,14 +236,14 @@ int main(int argc, char const *argv[])
                 FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         //=====================================================================================
 
-        imshow("Optical Flow", gry);
-        imshow("Original Frame", frame);
-        imshow("Foreground Mask", fgMask);
-        // videoout.write(frame);
+        // imshow("Optical Flow", gry);
+        // imshow("Original Frame", frame);
+        // imshow("Foreground Mask", fgMask);
+        // // videoout.write(frame);
 
-        int keyboard = waitKey(1);
-        if (keyboard == 27)
-            break;
+        // int keyboard = waitKey(1);
+        // if (keyboard == 27)
+        //     break;
         prvs = next;
     }
     auto stop = high_resolution_clock::now();
