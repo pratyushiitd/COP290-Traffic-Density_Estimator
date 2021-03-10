@@ -84,7 +84,7 @@ int main(int argc, char const *argv[])
     Mat H = findHomography(points, pts_dst);
     Rect crop_region(points[0].x, points[0].y, points[3].x - points[0].x, points[1].y - points[0].y);
 
-    string vid_path = "../assets/mock.mp4";
+    string vid_path = "../assets/trafficvideo.mp4";
 
     VideoCapture capture(samples::findFile(vid_path));
     int noOfFrames = capture.get(CAP_PROP_FRAME_COUNT);
@@ -121,6 +121,13 @@ int main(int argc, char const *argv[])
     auto start = high_resolution_clock::now();
     while (true)
     {
+        capture.read(frame);
+
+        if (framec % 5 != 0)
+        {
+            framec++;
+            continue;
+        }
         // DEBUGGER
 
         if (framec == 200000)
@@ -141,7 +148,6 @@ int main(int argc, char const *argv[])
 
         // Capture frame-by-frame
         // if (framec % 1000 == 0){cout << framec << endl;}
-        capture.read(frame);
         if (frame.empty())
             break;
 
@@ -221,14 +227,14 @@ int main(int argc, char const *argv[])
                 FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         //=====================================================================================
 
-        imshow("Optical Flow", gry);
-        imshow("Original Frame", frame);
-        imshow("Foreground Mask", fgMask);
-        // videoout.write(frame);
+        // imshow("Optical Flow", gry);
+        // imshow("Original Frame", frame);
+        // imshow("Foreground Mask", fgMask);
+        // // videoout.write(frame);
 
-        int keyboard = waitKey(1);
-        if (keyboard == 27)
-            break;
+        // int keyboard = waitKey(1);
+        // if (keyboard == 27)
+        //     break;
         prvs = next;
     }
     auto stop = high_resolution_clock::now();
