@@ -96,7 +96,7 @@ int main(int argc, char const *argv[])
         return 0;
     }
     Ptr<BackgroundSubtractor> obj_back;                       //create Background Subtractor object
-    obj_back = createBackgroundSubtractorMOG2(0, 350, false); // (History, threshold, detech_shadows = false)
+    obj_back = createBackgroundSubtractorMOG2(1, 350, false); // (History, threshold, detech_shadows = false)
     //obj_back = createBackgroundSubtractorKNN();
 
     int framec = 0;
@@ -112,24 +112,27 @@ int main(int argc, char const *argv[])
     frame1 = frame1(crop_region);
     cvtColor(frame1, prvs, COLOR_BGR2GRAY);
     warpPerspective(img1, img1, H, img1.size());
-    frame1 = img1;
-    // frame = img1(crop_region);
-    // obj_back->apply(frame, frame, 0);
+    // frame1 = img1;
+    frame = img1(crop_region);
+    obj_back->apply(frame, fgMask, 1);
+    obj_back->apply(frame, fgMask, 1);
+    obj_back->apply(frame, fgMask, 1);
+    obj_back->apply(frame, fgMask, 1);
     double fps = capture.get(CAP_PROP_FPS);
     // VideoWriter videoout("outcpp.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, frame.size());
 
     auto start = high_resolution_clock::now();
     while (true)
     {
+        // DEBUGGER
         capture.read(frame);
-
+        if (frame.empty())
+            break;
         if (framec % 5 != 0)
         {
             framec++;
             continue;
         }
-        // DEBUGGER
-
         if (framec == 200000)
         {
             break;
@@ -137,19 +140,17 @@ int main(int argc, char const *argv[])
         //
 
         framec++;
-        if (framec < capture.get(CAP_PROP_FRAME_COUNT) - 1)
-        {
-            cout << framec << ",";
-        }
-        else if (framec == capture.get(CAP_PROP_FRAME_COUNT) - 1)
+        if (framec == 1)
         {
             cout << framec;
+        }
+        else
+        {
+            cout << "," << framec;
         }
 
         // Capture frame-by-frame
         // if (framec % 1000 == 0){cout << framec << endl;}
-        if (frame.empty())
-            break;
 
         warpPerspective(frame, frame, H, frame.size());
         frame = frame(crop_region);
@@ -194,8 +195,8 @@ int main(int argc, char const *argv[])
 
         //normalize the magnitude Matrix and output into magn_norm Matrix
         // Min = 0 and Max = 1
-        normalize(magnitude, temp, 0.0f, 1.0f, NORM_MINMAX);
-        threshold(temp, magn_norm, 0.4f, 1.0f, THRESH_BINARY);
+        normalize(magnitude, magn_norm, 0.0f, 1.0f, NORM_MINMAX);
+        //threshold(temp, magn_norm, 0.4f, 1.0f, THRESH_BINARY);
         //threshold(gr_bt, magn_norm,0.8,1.0, THRESH_BINARY);
         angle *= ((1.f / 360.f) * (180.f / 255.f));
         //build hsv image
@@ -207,7 +208,7 @@ int main(int argc, char const *argv[])
         hsv.convertTo(hsv8, CV_8U, 255.0);
         cvtColor(hsv8, bgr, COLOR_HSV2BGR);
         cvtColor(bgr, gr_bt, COLOR_BGR2GRAY);
-        threshold(gr_bt, gry, 5, 255, THRESH_BINARY);
+        threshold(gr_bt, gry, 15, 255, THRESH_BINARY);
         //imshow("Optical Flow", hsv8);
 
         //====================================================================================
@@ -227,14 +228,14 @@ int main(int argc, char const *argv[])
                 FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         //=====================================================================================
 
-        // imshow("Optical Flow", gry);
-        // imshow("Original Frame", frame);
-        // imshow("Foreground Mask", fgMask);
-        // // videoout.write(frame);
+        imshow("Optical Flow", gry);
+        imshow("Original Frame", frame);
+        imshow("Foreground Mask", fgMask);
+        // videoout.write(frame);
 
-        // int keyboard = waitKey(1);
-        // if (keyboard == 27)
-        //     break;
+        int keyboard = waitKey(1);
+        if (keyboard == 27)
+            break;
         prvs = next;
     }
     auto stop = high_resolution_clock::now();
