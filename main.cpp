@@ -163,7 +163,7 @@ int main(int argc, char const *argv[])
         warpPerspective(frame, frame, H, frame.size());
         frame = frame(crop_region);
         // Display the resulting frame
-        // imshow("Frame", frame);
+        imshow("Frame", frame);
         fgMask = img1;
         obj_back->apply(frame, fgMask, 0); //Learning rate set to 0
 
@@ -236,12 +236,11 @@ int main(int argc, char const *argv[])
                 FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         //=====================================================================================
 
-        // imshow("Optical Flow", gry);
-        // imshow("Original Frame", frame);
-        // imshow("Foreground Mask", fgMask);
+        imshow("Optical Flow", gry);
+        imshow("Original Frame", frame);
+        imshow("Foreground Mask", fgMask);
         // // videoout.write(frame);
-
-        // int keyboard = waitKey(1);
+        int keyboard = waitKey(1);
         // if (keyboard == 27)
         //     break;
         prvs = next;
