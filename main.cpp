@@ -23,6 +23,7 @@ void CallBackFunc(int event, int x, int y, int flags, void *params)
         }
     }
 }
+
 int get_quad(const Point &p1)
 {
     if (p1.x > 0 && p1.y < 0)
