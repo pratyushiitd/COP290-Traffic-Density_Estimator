@@ -11,6 +11,8 @@
 using namespace std;
 using namespace cv;
 using namespace std::chrono;
+int xresol = 1;
+int yresol = 1;
 
 void CallBackFunc(int event, int x, int y, int flags, void *params)
 {
@@ -198,27 +200,34 @@ Mat evaluate_lucas_kanade_opticalflow(Mat &frame, vector<Point2f> &p0, vector<Po
     add(frame, mask, img);
     return img;
 }
+void changeResol(Mat &img1)
+{
+    resize(img1, img1, Size(yresol, xresol));
+}
 int main(int argc, char const *argv[])
 {
     string image1_path = samples::findFile("../assets/empty.jpg");
     Mat img1 = imread(image1_path, IMREAD_GRAYSCALE);
-    // UNCOMMENT FROM HERE AFTER SCRIPT IS OVER
-    // namedWindow("Display window", WINDOW_NORMAL);
-    // resizeWindow("Display window", 1000, 1000);
-    // imshow("Display window", img1);
+    xresol = atoi(argv[1]);
+    yresol = atoi(argv[2]);
+    changeResol(img1);
     vector<Point2f> points;
-    // cout << "Selected points are: " << endl;
-    // while (points.size() < 4)
-    // {
-    //     setMouseCallback("Display window", CallBackFunc, &points);
-    //     waitKey(500);
-    // }
-    // destroyWindow("Display window");
-    // points = sort_points(points);
-    points.push_back(Point2f(948, 270));
-    points.push_back(Point2f(205, 1062));
-    points.push_back(Point2f(1551, 1064));
-    points.push_back(Point2f(1296, 249));
+    // UNCOMMENT FROM HERE AFTER SCRIPT IS OVER
+    namedWindow("Display window", WINDOW_NORMAL);
+    resizeWindow("Display window", 1000, 1000);
+    imshow("Display window", img1);
+    cout << "Selected points are: " << endl;
+    while (points.size() < 4)
+    {
+        setMouseCallback("Display window", CallBackFunc, &points);
+        waitKey(500);
+    }
+    destroyWindow("Display window");
+    points = sort_points(points);
+    // points.push_back(Point2f(948, 270));
+    // points.push_back(Point2f(205, 1062));
+    // points.push_back(Point2f(1551, 1064));
+    // points.push_back(Point2f(1296, 249));
     vector<Point2f> pts_dst;
 
     pts_dst.push_back(Point2f(points[0].x, points[0].y));
@@ -252,6 +261,7 @@ int main(int argc, char const *argv[])
     vector<Point2f> p0, p1;
 
     capture >> frame1;
+    changeResol(frame1);
     warpPerspective(frame1, frame1, H, frame.size());
     frame1 = frame1(crop_region);
     cvtColor(frame1, prvs, COLOR_BGR2GRAY);
@@ -261,7 +271,7 @@ int main(int argc, char const *argv[])
     //obj_back->apply(frame, fgMask, 1);
     double fps = capture.get(CAP_PROP_FPS);
     double timeOfVid = noOfFrames / fps;
-    int processf = atoi(argv[1]);
+    int processf = 20;
     int qPastValue = 0;
     int dPastValue = 0;
     //==================
@@ -289,8 +299,11 @@ int main(int argc, char const *argv[])
     while (true)
     {
         capture.read(frame);
+
         if (frame.empty())
             break;
+        changeResol(frame);
+        // cout << framec << endl;
         if (framec % processf != 0)
         {
             framec++;

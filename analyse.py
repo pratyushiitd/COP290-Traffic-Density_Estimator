@@ -17,14 +17,14 @@ def diffCalc(arr1, arr2):
 
 
 pntsArray = []
-dynamic = open("./outputs/4/dynamic.out", "r")
+dynamic = open("./outputs/1920x1080/dynamic.out", "r")
 dynamicArray = list(map(float, dynamic.read().split(",")))
 dynamicArray = savgol_filter(dynamicArray, 17, 2)
 for i in dynamicArray:
     if(i < 0):
         print(i)
 
-static = open("./outputs/4/static.out", "r")
+static = open("./outputs/1920x1080/static.out", "r")
 staticArray = list(map(float, static.read().split(",")))
 
 
@@ -47,8 +47,8 @@ for subdir, dirs, files in os.walk('outputs'):
                                                  currentStatic))*100, staticArray).mean()]
             # ans += [diffCalc(staticArray, currentStatic)]
         elif file == 'timetaken.out':
-            x = float(open(os.path.join(subdir, file)).read()[23:29])
-            ans += [int(subdir[8:]), x]
+            x = float(open(os.path.join(subdir, file)).read())
+            ans += [int(subdir[8:12]), x]
             print(ans)
             pntsArray += [ans]
 pntsArray.sort(key=takeThird)
@@ -80,6 +80,6 @@ print(pntsArray)
 # plt.show()
 
 plt.plot(y, z)
-plt.xlabel('Parameter (x where N+x are processed)')
+plt.xlabel('Parameter (Y where YxY is Resolution)')
 plt.ylabel('Time taken')
 plt.show()
