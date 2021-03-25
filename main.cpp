@@ -283,10 +283,10 @@ int main(int argc, char const *argv[])
         //Display white ratio in white box on top left corner for masked frames
         display_whiteratio_queue(fgMask, frame, queue_y);
         //==================================================================================
-        vector<Point2f> good_new;
-        Mat frame_gray;
-        Mat mask = Mat::zeros(frame1.size(), frame1.type());
-        Mat img_lc = evaluate_lucas_kanade_opticalflow(frame_new, p0, p1, good_new, mask, old_gray, frame_gray, colors, sparse_y);
+        //vector<Point2f> good_new;
+        //Mat frame_gray;
+        //Mat mask = Mat::zeros(frame1.size(), frame1.type());
+        //Mat img_lc = evaluate_lucas_kanade_opticalflow(frame_new, p0, p1, good_new, mask, old_gray, frame_gray, colors, sparse_y);
         //==================================================================================
         //Optical Flow Evaluation
         Mat next;
@@ -297,7 +297,7 @@ int main(int argc, char const *argv[])
         imshow("Optical Flow", gry);
         imshow("Original Frame", frame);
         imshow("Foreground Mask", fgMask);
-        imshow("Lucas-Kanade", img_lc);
+        //imshow("Lucas-Kanade", img_lc);
         // // videoout.write(frame);
 
         int keyboard = waitKey(1);
@@ -305,17 +305,17 @@ int main(int argc, char const *argv[])
             break;
         prvs = next;
         // Now update the previous frame and previous points
-        old_gray = frame_gray.clone();
+        //old_gray = frame_gray.clone();
         //p0 = good_new;
-        p0.clear();
-        goodFeaturesToTrack(old_gray, p0, 1000, 0.1, 7, Mat(), 7, false, 0.04);
+        //p0.clear();
+        //goodFeaturesToTrack(old_gray, p0, 1000, 0.1, 7, Mat(), 7, false, 0.04);
     }
     auto stop = high_resolution_clock::now();
     capture.release();
     auto duration = duration_cast<microseconds>(stop - start);
     // cout << "Time taken by function: "
     //      << duration.count() / 1000000.0 << " seconds" << endl;
-    write_out_queue(sparse_y);
+    write_out_queue(queue_y);
     write_out_dynamic(dynamic_y);
     destroyAllWindows();
     return 0;
