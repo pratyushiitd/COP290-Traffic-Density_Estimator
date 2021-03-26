@@ -84,17 +84,17 @@ void display_whiteratio_queue(Mat &fgMask, Mat &frame, vector<int> &queue_y){
     putText(frame, frameNumberString.c_str(), cv::Point(45, 15),
             FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
 }
-void write_out_queue(vector<int> queue_y){
-    freopen("../outputs/static.out", "w", stdout);
-    for (int i = 0; i < queue_y.size(); i++)
+void write_out_queue(vector<int> sparse_y){
+    freopen("../outputs/sparse.out", "w", stdout);
+    for (int i = 0; i < sparse_y.size(); i++)
     {
-        if (i == queue_y.size() - 1)
+        if (i == sparse_y.size() - 1)
         {
-            cout << queue_y[i] / 1000.0;
+            cout << sparse_y[i] / 1000.0;
             break;
         }
 
-        cout << queue_y[i] / 1000.0 << ",";
+        cout << sparse_y[i] / 1000.0 << ",";
     }
 }
 void write_out_dynamic(vector<int> dynamic_y){
@@ -177,19 +177,25 @@ int main(int argc, char const *argv[])
 {
     string image1_path = samples::findFile("../assets/empty.jpg");
     Mat img1 = imread(image1_path, IMREAD_GRAYSCALE);
-    namedWindow("Display window", WINDOW_NORMAL);
-    resizeWindow("Display window", 1000, 1000);
-    imshow("Display window", img1);
+    // UNCOMMENT FROM HERE AFTER SCRIPT IS OVER
+    // namedWindow("Display window", WINDOW_NORMAL);
+    // resizeWindow("Display window", 1000, 1000);
+    // imshow("Display window", img1);
     vector<Point2f> points;
-    cout << "Selected points are: " << endl;
-    while (points.size() < 4)
-    {
-        setMouseCallback("Display window", CallBackFunc, &points);
-        waitKey(500);
-    }
-    destroyWindow("Display window");
-    points = sort_points(points);
+    // cout << "Selected points are: " << endl;
+    // while (points.size() < 4)
+    // {
+    //     setMouseCallback("Display window", CallBackFunc, &points);
+    //     waitKey(500);
+    // }
+    // destroyWindow("Display window");
+    // points = sort_points(points);
+    points.push_back(Point2f(948, 270));
+    points.push_back(Point2f(205, 1062));
+    points.push_back(Point2f(1551, 1064));
+    points.push_back(Point2f(1296, 249));
     vector<Point2f> pts_dst;
+
     pts_dst.push_back(Point2f(points[0].x, points[0].y));
     pts_dst.push_back(Point2f(points[0].x, points[1].y));
     pts_dst.push_back(Point2f(points[3].x, points[1].y));
@@ -235,12 +241,12 @@ int main(int argc, char const *argv[])
     // cout << timeOfVid << endl;
     int processf = 5;
 
-
+    int maxC = atoi(argv[1]);
     //==================
     // Create some random colors
     vector<Scalar> colors;
     RNG rng;
-    for(int i = 0; i < 1000; i++)
+    for(int i = 0; i < 500; i++)
     {
         int r = rng.uniform(0, 256);
         int g = rng.uniform(0, 256);
@@ -249,7 +255,7 @@ int main(int argc, char const *argv[])
     }
     //old_frame = frame1
     cvtColor(frame1, old_gray, COLOR_BGR2GRAY);
-    goodFeaturesToTrack(old_gray, p0, 1000, 0.1, 7, Mat(), 7, false, 0.04);
+    goodFeaturesToTrack(old_gray, p0, 500, 0.18, 7, Mat(), 7, false, 0.04);
     // Create a mask image for drawing purposes
     //p0 -> contains corners of frame old_gray
     //100 -> Number of corners
@@ -267,6 +273,10 @@ int main(int argc, char const *argv[])
             framec++;
             continue;
         }
+        if (framec % 100 == 0)
+        {
+            cout << framec << endl;
+        }
         framec++;
         if (framec == 999999)
         {
@@ -277,17 +287,17 @@ int main(int argc, char const *argv[])
         Mat frame_new = frame.clone();
         // Display the resulting frame
         // imshow("Frame", frame);
-        fgMask = img1;
-        obj_back->apply(frame, fgMask, 0); //Learning rate set to 0
+        //+fgMask = img1;
+        //+obj_back->apply(frame, fgMask, 0); //Learning rate set to 0
 
         //==================================================================================
         //Display white ratio in white box on top left corner for masked frames
-        display_whiteratio_queue(fgMask, frame, queue_y);
+        //+display_whiteratio_queue(fgMask, frame, queue_y);
         //==================================================================================
-        //vector<Point2f> good_new;
-        //Mat frame_gray;
-        //Mat mask = Mat::zeros(frame1.size(), frame1.type());
-        //Mat img_lc = evaluate_lucas_kanade_opticalflow(frame_new, p0, p1, good_new, mask, old_gray, frame_gray, colors, sparse_y);
+        vector<Point2f> good_new;
+        Mat frame_gray;
+        Mat mask = Mat::zeros(frame1.size(), frame1.type());
+        Mat img_lc = evaluate_lucas_kanade_opticalflow(frame_new, p0, p1, good_new, mask, old_gray, frame_gray, colors, sparse_y);
         //==================================================================================
         //Optical Flow Evaluation
         Mat next;
@@ -295,28 +305,30 @@ int main(int argc, char const *argv[])
         //Display white ratio in white box on top left corner for optical flow frame
         display_whiteratio_dynamic(gry, frame, dynamic_y);
 
-        imshow("Optical Flow", gry);
-        imshow("Original Frame", frame);
-        imshow("Foreground Mask", fgMask);
-        //imshow("Lucas-Kanade", img_lc);
+        // imshow("Optical Flow", gry);
+        // imshow("Original Frame", frame);
+        // imshow("Foreground Mask", fgMask);
+        // imshow("Lucas-Kanade", img_lc);
         // // videoout.write(frame);
 
-        int keyboard = waitKey(1);
-        if (keyboard == 27)
-            break;
+        //int keyboard = waitKey(1);
+        // if (keyboard == 27)
+        //     break;
         prvs = next;
         // Now update the previous frame and previous points
-        //old_gray = frame_gray.clone();
+        old_gray = frame_gray.clone();
         //p0 = good_new;
-        //p0.clear();
-        //goodFeaturesToTrack(old_gray, p0, 1000, 0.1, 7, Mat(), 7, false, 0.04);
+        p0.clear();
+        goodFeaturesToTrack(old_gray, p0, 500, 0.18, 7, Mat(),7, false, 0.04);
     }
     auto stop = high_resolution_clock::now();
     capture.release();
     auto duration = duration_cast<microseconds>(stop - start);
-    // cout << "Time taken by function: "
-    //      << duration.count() / 1000000.0 << " seconds" << endl;
-    write_out_queue(queue_y);
+    cout << "Time taken by function: "
+         << duration.count() / 1000000.0 << " seconds" << endl;
+    freopen("../outputs/timetaken.out", "w", stdout);
+    cout << duration.count() / 1000000.0 << endl;
+    write_out_queue(sparse_y);
     write_out_dynamic(dynamic_y);
     destroyAllWindows();
     return 0;
