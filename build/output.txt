@@ -1,0 +1,41 @@
+main() : creating thread, 0
+main() : creating thread, 1
+main() : creating thread, 2
+main() : creating thread, 3
+main() : creating thread, 4
+main() : creating thread, 5
+main() : creating thread, 6
+main() : creating thread, 7
+main() : creating thread, 8
+main() : creating thread, 9
+Sleeping in thread 
+Thread with id : 0  ...exiting 
+Sleeping in thread 
+Thread with id : 1  ...exiting 
+Sleeping in thread 
+Thread with id : 3  ...exiting 
+Sleeping in thread 
+Thread with id : 4  ...exiting 
+Sleeping in thread 
+Thread with id : 2  ...exiting 
+Sleeping in thread 
+Thread with id : 7  ...exiting 
+Sleeping in thread 
+Thread with id : 6  ...exiting 
+Sleeping in thread 
+Thread with id : 5  ...exiting 
+Main: completed thread id :0  exiting with status :0
+Main: completed thread id :1  exiting with status :Sleeping in thread 0
+Main: completed thread id :2
+  exiting with status :0
+Main: completed thread id :3  exiting with status :0
+Sleeping in thread 
+Thread with id : 8  ...exiting 
+Main: completed thread id :4  exiting with status :0
+Thread with id : 9  ...exiting 
+Main: completed thread id :5  exiting with status :0
+Main: completed thread id :6  exiting with status :0
+Main: completed thread id :7  exiting with status :0
+Main: completed thread id :8  exiting with status :0
+Main: completed thread id :9  exiting with status :0
+Main: program exiting.

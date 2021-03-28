@@ -8,6 +8,7 @@
 #include <opencv2/video.hpp>
 #include <math.h>
 #include <chrono>
+#include <pthread.h>
 using namespace std;
 using namespace cv;
 using namespace std::chrono;

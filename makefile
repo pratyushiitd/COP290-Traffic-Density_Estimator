@@ -7,6 +7,8 @@ TARGET = main
 BUILD_DIR = ./build
 OUT_DIR = ./outputs
 LIB = pkg-config --cflags --libs opencv
+TESTLIB= pkg-config --cflags --libs opencv
+TEST=test
 .DEFAULT:
 	@echo make all to build and run
 	@echo make build to build
@@ -35,4 +37,8 @@ run:
 
 plot:
 	python3 plot.py
+test:
+	$(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TEST) $(TEST).cpp -lpthread -std=c++11 `$(TESTLIB)`
+	cd $(BUILD_DIR); ./$(TEST) $(PARAM)
+
 .PHONY: all
