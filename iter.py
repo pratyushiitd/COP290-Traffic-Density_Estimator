@@ -1,5 +1,5 @@
 import os
-a = [3,5,7,9,11,13,15]
+a = [1, 2, 3, 5, 7, 9]
 for i in a:
     os.system('make run PARAM='+str(i))
     os.system('make plot')

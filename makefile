@@ -33,7 +33,7 @@ build:
 	
 run:
 	@echo Running the executable ...
-	cd $(BUILD_DIR); ./$(TARGET) $(PARAM)
+	cd $(BUILD_DIR); ./$(TEST) $(PARAM)
 
 plot:
 	python3 plot.py

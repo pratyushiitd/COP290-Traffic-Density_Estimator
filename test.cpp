@@ -319,13 +319,13 @@ int main(int argc, char const *argv[])
          << duration.count() / 1000000.0 << " seconds" << endl;
     freopen("../outputs/timetaken.out", "w", stdout);
     cout << duration.count() / 1000000.0 << endl;
-    for (int i = 0; i < dynamic_y.size(); i++)
-    {
-        // "first" and "second" are used to access
-        // 1st and 2nd element of pair respectively
-        cout << dynamic_y[i].first << " "
-             << dynamic_y[i].second << endl;
-    }
+    // for (int i = 0; i < dynamic_y.size(); i++)
+    // {
+    //     // "first" and "second" are used to access
+    //     // 1st and 2nd element of pair respectively
+    //     cout << dynamic_y[i].first << " "
+    //          << dynamic_y[i].second << endl;
+    // }
     sort(dynamic_y.begin(), dynamic_y.end());
     sort(queue_y.begin(), queue_y.end());
     write_out_queue(queue_y);
