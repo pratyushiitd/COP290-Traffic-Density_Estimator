@@ -26,7 +26,7 @@ clean:
 build:
 	@echo Building project :
 	mkdir $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TARGET) $(TARGET).cpp -std=c++11 `$(LIB)`
+	$(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TARGET) $(TARGET).cpp -lpthread -std=c++11 `$(LIB)`
 	@echo Generated the executable without errors ...
 	
 run:

@@ -18,7 +18,7 @@ def plotter(x, y, z, nameOfFig):
     plt.axvline(x=180, color='r', linestyle='dashed')
     plt.axvline(x=275, color='g', linestyle='dashed')
     plt.axvline(x=352, color='r', linestyle='dashed')
-    plt.plot(x, y, label="Sparse Density")
+    plt.plot(x, y, label="Queue Density")
     plt.plot(x, z, label="Dynamic Density")
     plt.xlabel('Time (in Seconds)')
     plt.ylabel('Density')
@@ -32,9 +32,9 @@ def plotter(x, y, z, nameOfFig):
 
 # frames = open("./outputs/frames.out", "r")
 # framesArray = list(map(float, frames.read().split(",")))
-dynamic = open("./outputs/dynamic.out", "r")
+dynamic = open("./outputs/6/dynamic.out", "r")
 dynamicArray = list(map(float, dynamic.read().split(",")))
-static = open("./outputs/sparse.out", "r")
+static = open("./outputs/6/queue.out", "r")
 staticArray = list(map(float, static.read().split(",")))
 
 # Creating x axis
@@ -56,8 +56,8 @@ print(len(framesArray))
 print(len(dynamicArray))
 print(len(staticArray))
 
-for i in range(lenOfArr):
-    print(framesArray[i], ",", staticArray[i], ",", dynamicArray[i])
+# for i in range(lenOfArr):
+#     print(framesArray[i], ",", staticArray[i], ",", dynamicArray[i])
 # Plot
 #plotter(framesArray, staticArray, savgol_filter(dynamicArray, 17, 2), "Plot")
 plotter(framesArray, staticArray, dynamicArray, "Plot")
