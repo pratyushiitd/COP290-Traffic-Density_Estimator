@@ -6,14 +6,14 @@ if methodNumber == '1':
 elif methodNumber == '2':
     a = [[200, 100], [200, 250], [3000, 300]]
 elif methodNumber == '3':
-    a = []
+    a = [1,2,3,4,5,6]
 elif methodNumber == '4':
     a = [1, 2, 3, 5, 7, 9]
 elif methodNumber == 'ec':
     a = []
 paramDir = 'outputs/method_'+methodNumber
 os.system('mkdir '+paramDir)
-if methodNumber != '4':
+if (methodNumber != '4' and methodNumber != '3'):
     os.system('make obuild METHOD='+methodNumber)
 else:
     os.system('make pbuild METHOD='+methodNumber)
