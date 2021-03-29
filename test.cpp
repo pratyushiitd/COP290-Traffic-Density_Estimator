@@ -16,6 +16,7 @@ int NUM_THREADS;
 vector<pair<int, int>>
     queue_y;
 vector<pair<int, int>> dynamic_y;
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 void CallBackFunc(int event, int x, int y, int flags, void *params)
 {
     if (event == EVENT_LBUTTONDOWN)
@@ -70,10 +71,6 @@ int display_whiteratio_dynamic(Mat &gry, Mat &frame, int pastValue)
         stringstream sst;
         sst << white_ratio_dyn;
         white_pixels_dyn.clear();
-        rectangle(frame, cv::Point(10, 30), cv::Point(100, 48), cv::Scalar(255, 255, 255), -1); //Display white ratio on top left corner
-        string frameNumberString = sst.str();
-        putText(frame, frameNumberString.c_str(), cv::Point(45, 43),
-                FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         return white_ratio_dyn;
     }
     else
@@ -94,9 +91,6 @@ int display_whiteratio_queue(Mat &fgMask, Mat &frame, int pastValue)
         int white_ratio = ((white_pixels.size()) * 1000.0) / (fgMask.cols * fgMask.rows);
         ss << white_ratio;
         white_pixels.clear();
-        string frameNumberString = ss.str();
-        putText(frame, frameNumberString.c_str(), cv::Point(45, 15),
-                FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
         return white_ratio;
     }
     else
@@ -166,38 +160,6 @@ Mat evaluate_dense_opticalflow(Mat &next, Mat &prvs, Mat frame)
     threshold(gr_bt, gry, 15, 255, THRESH_BINARY);
     return gry;
 }
-Mat evaluate_lucas_kanade_opticalflow(Mat &frame, vector<Point2f> &p0, vector<Point2f> &p1, vector<Point2f> &good_new, Mat &mask, Mat &old_gray, Mat &frame_gray, vector<Scalar> colors, vector<int> &sparse)
-{
-    //Mat frame_gray;
-    cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
-    vector<uchar> status;
-    vector<float> err;
-    TermCriteria criteria = TermCriteria((TermCriteria::COUNT) + (TermCriteria::EPS), 10, 0.03);
-    calcOpticalFlowPyrLK(old_gray, frame_gray, p0, p1, status, err, Size(15, 15), 2, criteria);
-    //vector<Point2f> good_new;
-    //We pass the previous frame, previous points and next frame.
-    //It returns next points along with some status numbers which
-    //has a value of 1 if next point is found, else zero
-    double euclid = 0.0;
-    for (uint i = 0; i < p0.size(); i++)
-    {
-        // Select good points
-        if (status[i] == 1)
-        {
-            //status = 1 implies the the point is found
-            good_new.push_back(p1[i]);
-            // draw the tracks
-            //cout <<< p1[i].x << " " << p1[i].y << " " << p0[i].x << " " << p0[i].y << endl;
-            euclid += sqrt((p1[i].x - p0[i].x) * (p1[i].x - p0[i].x) + (p1[i].y - p0[i].y) * (p1[i].y - p0[i].y));
-            line(mask, p1[i], p0[i], colors[i], 2);
-            circle(frame, p1[i], 5, colors[i], -1);
-        }
-    }
-    sparse.push_back(euclid / 10);
-    Mat img;
-    add(frame, mask, img);
-    return img;
-}
 struct thread_data
 {
     int thread_id;
@@ -206,8 +168,9 @@ struct thread_data
 };
 void helper(int threadNumber, VideoCapture capture)
 {
-    int framec = 0;
-
+    int framec = -1;
+    int totalFrames = capture.get(CAP_PROP_FRAME_COUNT); //Getting the total number of frames//
+    // cout << totalFrames << endl;
     string image1_path = samples::findFile("../assets/empty.jpg");
     Mat img1 = imread(image1_path, IMREAD_GRAYSCALE);
     vector<Point2f> points;
@@ -233,8 +196,6 @@ void helper(int threadNumber, VideoCapture capture)
     Mat frame, fgMask, prvs, frame1, old_gray;
     // vector<pair<int, int>> queue_y;
     // vector<pair<int, int>> dynamic_y;
-    vector<int> sparse_y;
-    vector<Point2f> p0, p1;
 
     capture >> frame1;
     warpPerspective(frame1, frame1, H, frame.size());
@@ -249,68 +210,56 @@ void helper(int threadNumber, VideoCapture capture)
     int dPastValue = 0;
     //==================
     // Create some random colors
-    vector<Scalar> colors;
-    RNG rng;
-    for (int i = 0; i < 1000; i++)
-    {
-        int r = rng.uniform(0, 256);
-        int g = rng.uniform(0, 256);
-        int b = rng.uniform(0, 256);
-        colors.push_back(Scalar(r, g, b));
-    }
-    //old_frame = frame1
-    cvtColor(frame1, old_gray, COLOR_BGR2GRAY);
-    goodFeaturesToTrack(old_gray, p0, 1000, 0.1, 7, Mat(), 7, false, 0.04);
-    // Create a mask image for drawing purposes
-    //p0 -> contains corners of frame old_gray
-    //100 -> Number of corners
-    //0.3 -> corners with less than 0.3*best_corner_quality are rejected
-    //7 -> Minimum possible Euclidean distance between the returned corners
-    //Mat mask = Mat::zeros(frame1.size(), frame1.type());
     //======================
     while (true)
     {
-        if (framec % 100 == 0)
-            cout << framec << " " << threadNumber << endl;
-        capture.read(frame);
+        // if (framec % 100 == 0)
+        //     cout << framec << " " << threadNumber << endl;
+
         framec++;
-
-        // if (framec >= 2000)
-        // {
-        //     imshow("Original Frame", frame);
-        //     int keyboard = waitKey(0);
-
-        //     break;
-        // }
-        if (frame.empty())
-            break;
-        if (framec % processf != 0)
+        if (totalFrames < framec + 2)
         {
-            queue_y.push_back(make_pair(framec, qPastValue));
-            dynamic_y.push_back(make_pair(framec, dPastValue));
-            continue;
+            break;
         }
+        capture.read(frame);
+
         if ((framec / processf) % NUM_THREADS != threadNumber)
         {
             continue;
         }
+
+        if (framec % processf != 0)
+        {
+            pthread_mutex_lock(&mutex1);
+            queue_y.push_back(make_pair(framec, qPastValue));
+            dynamic_y.push_back(make_pair(framec, dPastValue));
+            pthread_mutex_unlock(&mutex1);
+            continue;
+        }
+        // capture.set(CAP_PROP_POS_FRAMES, framec);
+        // cout << "Frame Number: " << framec << " is proccessed by Thread Number: " << threadNumber << endl;
+        // capture.read(frame);
+        if (frame.empty())
+            break;
 
         warpPerspective(frame, frame, H, frame.size());
         frame = frame(crop_region);
         fgMask = img1;
         obj_back->apply(frame, fgMask, 0); //Learning rate set to 0
         qPastValue = display_whiteratio_queue(fgMask, frame, -1);
+        pthread_mutex_lock(&mutex1);
         queue_y.push_back(make_pair(framec, qPastValue));
+        pthread_mutex_unlock(&mutex1);
         //==================================================================================
         //Optical Flow Evaluation
         Mat next;
         Mat gry = evaluate_dense_opticalflow(next, prvs, frame);
         //Display white ratio in white box on top left corner for optical flow frame
         dPastValue = display_whiteratio_dynamic(gry, frame, -1);
+        pthread_mutex_lock(&mutex1);
         dynamic_y.push_back(make_pair(framec, dPastValue));
-        imshow("Optical Flow", gry);
-        imshow("Original Frame", frame);
-        imshow("Foreground Mask", fgMask);
+        pthread_mutex_unlock(&mutex1);
+
         // int keyboard = waitKey(1);
         // if (keyboard == 27)
         //     break;

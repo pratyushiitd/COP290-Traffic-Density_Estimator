@@ -62,7 +62,8 @@
         "regex": "cpp",
         "valarray": "cpp",
         "future": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "any": "cpp"
     },
     "python.pythonPath": "/bin/python3"
 }
