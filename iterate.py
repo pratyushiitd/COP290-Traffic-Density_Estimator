@@ -13,7 +13,10 @@ elif methodNumber == 'ec':
     a = []
 paramDir = 'outputs/method_'+methodNumber
 os.system('mkdir '+paramDir)
-os.system('make obuild METHOD='+methodNumber)
+if methodNumber != '4':
+    os.system('make obuild METHOD='+methodNumber)
+else:
+    os.system('make pbuild METHOD='+methodNumber)
 for i in a:
     if(methodNumber == '2'):
         os.system('make orun METHOD='+methodNumber +

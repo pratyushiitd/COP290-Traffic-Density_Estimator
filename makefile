@@ -36,6 +36,11 @@ obuild:
 	@echo Building project :
 	cd $(SRC_DIR); $(CC) $(CPPFLAGS) -o .$(BUILD_DIR)/method_$(METHOD) method_$(METHOD).cpp -std=c++11 `$(LIB)`
 	@echo Generated the executable without errors ...
+pbuild:
+	@echo Building project :
+	cd $(SRC_DIR); $(CC) $(CPPFLAGS) -o .$(BUILD_DIR)/method_$(METHOD) method_$(METHOD).cpp -lpthread -std=c++11 `$(LIB)`
+	@echo Generated the executable without errors ...
+
 orun:
 	@echo Running the executable ...
 	cd $(BUILD_DIR); ./method_$(METHOD) $(P1) $(P2)
