@@ -18,7 +18,6 @@ using namespace std::chrono;
 vector<pair<int, int>> queue_y;
 vector<pair<int, int>> dynamic_y;
 int processf = 5;
-pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 void CallBackFunc(int event, int x, int y, int flags, void *params)
 {
