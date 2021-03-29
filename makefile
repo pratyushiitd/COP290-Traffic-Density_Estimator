@@ -37,8 +37,12 @@ run:
 
 plot:
 	python3 plot.py
+<<<<<<< HEAD
 test:
 	$(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TEST) $(TEST).cpp -lpthread -std=c++11 `$(TESTLIB)`
 	cd $(BUILD_DIR); ./$(TEST) $(PARAM)
 
 .PHONY: all
+=======
+.PHONY: all
+>>>>>>> bb6d3f7b4db4eeebe297a8ae991f360e75a8d1b3

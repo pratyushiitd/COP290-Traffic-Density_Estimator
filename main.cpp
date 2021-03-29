@@ -106,13 +106,13 @@ void write_out_queue(vector<int> queue_y)
     freopen("../outputs/static.out", "w", stdout);
     for (int i = 0; i < queue_y.size(); i++)
     {
-        if (i == queue_y.size() - 1)
+        if (i == sparse_y.size() - 1)
         {
-            cout << queue_y[i] / 1000.0;
+            cout << sparse_y[i] / 1000.0;
             break;
         }
 
-        cout << queue_y[i] / 1000.0 << ",";
+        cout << sparse_y[i] / 1000.0 << ",";
     }
 }
 void write_out_dynamic(vector<int> dynamic_y)
