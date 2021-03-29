@@ -208,9 +208,6 @@ void helper(int threadNumber, VideoCapture capture)
     int processf = 5;
     int qPastValue = 0;
     int dPastValue = 0;
-    //==================
-    // Create some random colors
-    //======================
     while (true)
     {
         // if (framec % 100 == 0)
@@ -260,9 +257,6 @@ void helper(int threadNumber, VideoCapture capture)
         dynamic_y.push_back(make_pair(framec, dPastValue));
         pthread_mutex_unlock(&mutex1);
 
-        // int keyboard = waitKey(1);
-        // if (keyboard == 27)
-        //     break;
         prvs = next;
     }
     capture.release();
@@ -319,13 +313,7 @@ int main(int argc, char const *argv[])
          << duration.count() / 1000000.0 << " seconds" << endl;
     freopen("../outputs/timetaken.out", "w", stdout);
     cout << duration.count() / 1000000.0 << endl;
-    // for (int i = 0; i < dynamic_y.size(); i++)
-    // {
-    //     // "first" and "second" are used to access
-    //     // 1st and 2nd element of pair respectively
-    //     cout << dynamic_y[i].first << " "
-    //          << dynamic_y[i].second << endl;
-    // }
+
     sort(dynamic_y.begin(), dynamic_y.end());
     sort(queue_y.begin(), queue_y.end());
     write_out_queue(queue_y);
