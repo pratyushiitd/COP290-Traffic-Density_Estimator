@@ -56,7 +56,8 @@ vector<Point2f> sort_points(vector<Point2f> points)
     }
     return points;
 }
-void display_whiteratio_dynamic(Mat &gry, Mat &frame, vector<int> &dynamic_y){
+void display_whiteratio_dynamic(Mat &gry, Mat &frame, vector<int> &dynamic_y)
+{
     vector<Point> white_pixels_dyn;
     cv::findNonZero(gry, white_pixels_dyn);
     int white_ratio_dyn = ((white_pixels_dyn.size()) * 1000.0) / (gry.cols * gry.rows);
@@ -69,7 +70,8 @@ void display_whiteratio_dynamic(Mat &gry, Mat &frame, vector<int> &dynamic_y){
     putText(frame, frameNumberString.c_str(), cv::Point(45, 43),
             FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
 }
-void display_whiteratio_queue(Mat &fgMask, Mat &frame, vector<int> &queue_y){
+void display_whiteratio_queue(Mat &fgMask, Mat &frame, vector<int> &queue_y)
+{
     rectangle(frame, cv::Point(10, 2), cv::Point(100, 20), cv::Scalar(255, 255, 255), -1); //Display white ratio on top left corner
     stringstream ss;
     //ss << capture.get(CAP_PROP_POS_FRAMES); //0-based index of the frame to be decoded/captured next.
@@ -84,7 +86,8 @@ void display_whiteratio_queue(Mat &fgMask, Mat &frame, vector<int> &queue_y){
     putText(frame, frameNumberString.c_str(), cv::Point(45, 15),
             FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0));
 }
-void write_out_queue(vector<int> queue_y){
+void write_out_queue(vector<int> queue_y)
+{
     freopen("../outputs/static.out", "w", stdout);
     for (int i = 0; i < queue_y.size(); i++)
     {
@@ -97,7 +100,8 @@ void write_out_queue(vector<int> queue_y){
         cout << queue_y[i] / 1000.0 << ",";
     }
 }
-void write_out_dynamic(vector<int> dynamic_y){
+void write_out_dynamic(vector<int> dynamic_y)
+{
     freopen("../outputs/dynamic.out", "w", stdout);
     for (int i = 0; i < dynamic_y.size(); i++)
     {
@@ -109,7 +113,8 @@ void write_out_dynamic(vector<int> dynamic_y){
         cout << dynamic_y[i] / 1000.0 << ",";
     }
 }
-Mat evaluate_dense_opticalflow(Mat &next, Mat &prvs, Mat frame){
+Mat evaluate_dense_opticalflow(Mat &next, Mat &prvs, Mat frame)
+{
     cvtColor(frame, next, COLOR_BGR2GRAY);
     Mat flow(prvs.size(), CV_32FC2);
     calcOpticalFlowFarneback(prvs, next, flow, 0.5, 3, 15, 3, 7, 1.5, 0);
@@ -143,28 +148,30 @@ Mat evaluate_dense_opticalflow(Mat &next, Mat &prvs, Mat frame){
     threshold(gr_bt, gry, 15, 255, THRESH_BINARY);
     return gry;
 }
-Mat evaluate_lucas_kanade_opticalflow(Mat &frame, vector<Point2f> &p0,vector<Point2f> &p1, vector<Point2f> &good_new, Mat &mask, Mat &old_gray, Mat &frame_gray, vector<Scalar> colors, vector<int> &sparse){
+Mat evaluate_lucas_kanade_opticalflow(Mat &frame, vector<Point2f> &p0, vector<Point2f> &p1, vector<Point2f> &good_new, Mat &mask, Mat &old_gray, Mat &frame_gray, vector<Scalar> colors, vector<int> &sparse)
+{
     //Mat frame_gray;
     cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
     vector<uchar> status;
     vector<float> err;
     TermCriteria criteria = TermCriteria((TermCriteria::COUNT) + (TermCriteria::EPS), 10, 0.03);
-    calcOpticalFlowPyrLK(old_gray, frame_gray, p0, p1, status, err, Size(15,15), 2, criteria);
+    calcOpticalFlowPyrLK(old_gray, frame_gray, p0, p1, status, err, Size(15, 15), 2, criteria);
     //vector<Point2f> good_new;
-    //We pass the previous frame, previous points and next frame. 
-    //It returns next points along with some status numbers which 
+    //We pass the previous frame, previous points and next frame.
+    //It returns next points along with some status numbers which
     //has a value of 1 if next point is found, else zero
     double euclid = 0.0;
-    for(uint i = 0; i < p0.size(); i++)
+    for (uint i = 0; i < p0.size(); i++)
     {
         // Select good points
-        if(status[i] == 1) {
+        if (status[i] == 1)
+        {
             //status = 1 implies the the point is found
             good_new.push_back(p1[i]);
             // draw the tracks
             //cout <<< p1[i].x << " " << p1[i].y << " " << p0[i].x << " " << p0[i].y << endl;
-            euclid+= sqrt((p1[i].x - p0[i].x) * (p1[i].x - p0[i].x) + (p1[i].y - p0[i].y) * (p1[i].y - p0[i].y)) ;
-            line(mask,p1[i], p0[i], colors[i], 2);
+            euclid += sqrt((p1[i].x - p0[i].x) * (p1[i].x - p0[i].x) + (p1[i].y - p0[i].y) * (p1[i].y - p0[i].y));
+            line(mask, p1[i], p0[i], colors[i], 2);
             circle(frame, p1[i], 5, colors[i], -1);
         }
     }
@@ -235,17 +242,16 @@ int main(int argc, char const *argv[])
     // cout << timeOfVid << endl;
     int processf = 5;
 
-
     //==================
     // Create some random colors
     vector<Scalar> colors;
     RNG rng;
-    for(int i = 0; i < 1000; i++)
+    for (int i = 0; i < 1000; i++)
     {
         int r = rng.uniform(0, 256);
         int g = rng.uniform(0, 256);
         int b = rng.uniform(0, 256);
-        colors.push_back(Scalar(r,g,b));
+        colors.push_back(Scalar(r, g, b));
     }
     //old_frame = frame1
     cvtColor(frame1, old_gray, COLOR_BGR2GRAY);
@@ -261,7 +267,8 @@ int main(int argc, char const *argv[])
     while (true)
     {
         capture.read(frame);
-        if (frame.empty()) break;
+        if (frame.empty())
+            break;
         if (framec % processf != 0)
         {
             framec++;

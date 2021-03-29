@@ -6,6 +6,7 @@ CPPFLAGS  = -g -Wall
 TARGET = main
 BUILD_DIR = ./build
 OUT_DIR = ./outputs
+SRC_DIR= ./src
 LIB = pkg-config --cflags --libs opencv
 .DEFAULT:
 	@echo make all to build and run
@@ -26,13 +27,21 @@ clean:
 build:
 	@echo Building project :
 	mkdir $(BUILD_DIR)
-	$(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TARGET) $(TARGET).cpp -std=c++11 `$(LIB)`
+	cd $(SRC_DIR); $(CC) $(CPPFLAGS) -o $(BUILD_DIR)/$(TARGET) $(TARGET).cpp -std=c++11 `$(LIB)`
 	@echo Generated the executable without errors ...
-	
 run:
 	@echo Running the executable ...
 	cd $(BUILD_DIR); ./$(TARGET)
-
+obuild:
+	@echo Building project :
+	mkdir $(BUILD_DIR)
+	cd $(SRC_DIR); $(CC) $(CPPFLAGS) -o $(BUILD_DIR)/method_$(METHOD) method_$(METHOD).cpp -std=c++11 `$(LIB)`
+	@echo Generated the executable without errors ...
+orun:
+	@echo Running the executable ...
+	cd $(BUILD_DIR); ./method_$(METHOD) $(P1) $(P2)
 plot:
 	python3 plot.py
+optimize:
+	python3 iterate.py
 .PHONY: all
