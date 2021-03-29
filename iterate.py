@@ -4,7 +4,7 @@ methodNumber = sys.argv[1]
 if methodNumber == '1':
     a = [50, 40, 30, 20, 15, 10, 9, 8, 7, 6, 5, 4]
 elif methodNumber == '2':
-    a = [[100, 100], [200, 200], [300, 300]]
+    a = [[200, 100], [200, 250], [3000, 300]]
 elif methodNumber == '3':
     a = []
 elif methodNumber == '4':
@@ -21,7 +21,19 @@ for i in a:
     else:
         os.system('make orun METHOD='+methodNumber+' P1="'+str(i)+"\"")
     os.system('make plot')
-    workDir = paramDir+"/"+str(i).strip()
+    if methodNumber != '2':
+        workDir = paramDir+"/"+str(i).strip()
+    else:
+        attach = ""
+        if i[0] < 1000:
+            attach += "0"+str(i[0])+"x"
+        else:
+            attach += str(i[0])+"x"
+        if i[1] < 1000:
+            attach += "0"+str(i[1])
+        else:
+            attach += str(i[0])
+        workDir = paramDir+"/"+attach
     os.system('mkdir "'+workDir+"\"")
     os.system('mv outputs/dynamic.out "'+workDir+"\"")
     os.system('mv outputs/static.out "'+workDir+"\"")
