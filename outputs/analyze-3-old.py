@@ -39,8 +39,6 @@ for subdir, dirs, files in os.walk('method_3'):
             ans += [100*np.abs(divide_true(np.subtract(currentqueue,origQueue), origQueue)).mean()]
         elif file == 'timetaken.out':
             x = float(open(os.path.join(subdir, file)).read())
-            print(subdir)
-            print(subdir.index('/'))
             ans += [int(subdir[subdir.index('/')+1:]), x]
             # x = float(open(os.path.join(subdir, file)).read())
             # #print("xx" + subdir[10:12])
@@ -48,42 +46,33 @@ for subdir, dirs, files in os.walk('method_3'):
             # #print(ans)
             pntsArray += [ans]
 print(pntsArray)
-pntsArray.sort(key=lambda x : x[2])
+pntsArray.sort(key=lambda x : x[0])
 # x = []
 # y = []
 print(pntsArray)
-x = []	# static error
-y = []	# Parameter array
-z = []	# time taken
-w = []	# dynamic error
+x = []
+y = []
+z = []
+w = []
 for i in pntsArray:
-    z += [i[3]]
-    y += [i[2]]
-    x += [i[1]]
-    w += [i[0]]
-print("W")
-print(w)
-print("X")
-print(x)
-print("Y")
-print(y)
-print("Z")
-print(z)
-
-plt.plot(y, w)
-plt.xlabel("Threads")
+    z += [i[2]]
+    y += [i[3]]
+    x += [i[0]]
+    w += [i[1]]
+plt.plot(x, z)
+plt.xlabel("Number of threads")
 plt.ylabel('% Error in Dynamic Density')
 #plt.show()
 plt.savefig("./method_3/dynamic error")
 plt.close()
-plt.plot(y, x)
-plt.xlabel("Threads")
+plt.plot(x, y)
+plt.xlabel("Number of threads")
 plt.ylabel('% Error in Queue Density')
 #plt.show()
 plt.savefig("./method_3/queue error")
 plt.close()
-plt.plot(y, z)
-plt.xlabel("Threads")
+plt.plot(x, w)
+plt.xlabel("Number of threads")
 plt.ylabel('Execution time (sec)')
 #plt.show()
 plt.savefig("./method_3/time_taken")
