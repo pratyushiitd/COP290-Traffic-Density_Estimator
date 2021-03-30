@@ -88,7 +88,7 @@ void display_whiteratio_queue(Mat &fgMask, Mat &frame, vector<int> &queue_y)
 }
 void write_out_queue(vector<int> queue_y)
 {
-    freopen("../outputs/static.out", "w", stdout);
+    freopen("../outputs/main/static.out", "w", stdout);
     for (int i = 0; i < queue_y.size(); i++)
     {
         if (i == queue_y.size() - 1)
@@ -102,7 +102,7 @@ void write_out_queue(vector<int> queue_y)
 }
 void write_out_dynamic(vector<int> dynamic_y)
 {
-    freopen("../outputs/dynamic.out", "w", stdout);
+    freopen("../outputs/main/dynamic.out", "w", stdout);
     for (int i = 0; i < dynamic_y.size(); i++)
     {
         if (i == dynamic_y.size() - 1)
