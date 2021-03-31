@@ -63,7 +63,8 @@ vector<Point2f> sort_points(vector<Point2f> points)
     }
     return points;
 }
-int display_whiteratio_dynamic(Mat gry, Mat &frame){
+int display_whiteratio_dynamic(Mat gry, Mat &frame)
+{
     vector<Point> white_pixels_dyn;
     cv::findNonZero(gry, white_pixels_dyn);
     int white_ratio_dyn = ((white_pixels_dyn.size()) * 1000.0) / (gry.cols * gry.rows);
@@ -71,7 +72,8 @@ int display_whiteratio_dynamic(Mat gry, Mat &frame){
     sst << white_ratio_dyn;
     return white_ratio_dyn;
 }
-int display_whiteratio_queue(Mat fgMask, Mat frame){
+int display_whiteratio_queue(Mat fgMask, Mat frame)
+{
     //rectangle(frame, cv::Point(10, 2), cv::Point(100, 20), cv::Scalar(255, 255, 255), -1); //Display white ratio on top left corner
     stringstream ss;
     vector<Point> white_pixels;
@@ -81,16 +83,17 @@ int display_whiteratio_queue(Mat fgMask, Mat frame){
     ss << white_ratio;
     return white_ratio;
 }
-void write_out_queue(vector<pair<int, int>> queue_y, int NUM_THREADS){
+void write_out_queue(vector<pair<int, int>> queue_y, int NUM_THREADS)
+{
     freopen("../../analysis/outputs/static.out", "w", stdout);
     //cout << "Hello" << endl;
     int arr_sz = queue_y.size() / NUM_THREADS;
     //cout << "Size is : " << arr_sz << endl;
-    int arr[arr_sz+1] = {0};
+    int arr[arr_sz + 1] = {0};
     for (int i = 0; i < queue_y.size(); i++)
     {
         //cout << queue_y[i].first << "::" << queue_y[i].second << endl;
-        arr[queue_y[i].first]+=queue_y[i].second;
+        arr[queue_y[i].first] += queue_y[i].second;
     }
     for (int i = 1; i <= arr_sz; i++)
     {
@@ -103,16 +106,17 @@ void write_out_queue(vector<pair<int, int>> queue_y, int NUM_THREADS){
         cout << arr[i] / (NUM_THREADS * 1000.0) << ",";
     }
 }
-void write_out_dynamic(vector<pair<int, int>> dynamic_y, int NUM_THREADS){
+void write_out_dynamic(vector<pair<int, int>> dynamic_y, int NUM_THREADS)
+{
     freopen("../../analysis/outputs/dynamic.out", "w", stdout);
     //cout << "Hello1" << endl;
     int arr_sz = dynamic_y.size() / NUM_THREADS;
     //cout << "Size is : " << arr_sz << endl;
-    int arr[arr_sz+1] = {0};
+    int arr[arr_sz + 1] = {0};
     for (int i = 0; i < dynamic_y.size(); i++)
     {
         //cout << dynamic_y[i].first << "::" << dynamic_y[i].second << endl;
-        arr[dynamic_y[i].first]+=dynamic_y[i].second;
+        arr[dynamic_y[i].first] += dynamic_y[i].second;
         //cout << "arr " << arr[dynamic_y[i].first] << endl;
     }
     for (int i = 1; i <= arr_sz; i++)
@@ -126,7 +130,8 @@ void write_out_dynamic(vector<pair<int, int>> dynamic_y, int NUM_THREADS){
         cout << arr[i] / (NUM_THREADS * 1000.0) << ",";
     }
 }
-Mat evaluate_dense_opticalflow(Mat &next, Mat &prvs, Mat frame){
+Mat evaluate_dense_opticalflow(Mat &next, Mat &prvs, Mat frame)
+{
     cvtColor(frame, next, COLOR_BGR2GRAY);
     Mat flow(prvs.size(), CV_32FC2);
     calcOpticalFlowFarneback(prvs, next, flow, 0.5, 3, 15, 3, 7, 1.5, 0);
@@ -160,28 +165,30 @@ Mat evaluate_dense_opticalflow(Mat &next, Mat &prvs, Mat frame){
     threshold(gr_bt, gry, 15, 255, THRESH_BINARY);
     return gry;
 }
-Mat evaluate_lucas_kanade_opticalflow(Mat &frame, vector<Point2f> &p0,vector<Point2f> &p1, vector<Point2f> &good_new, Mat &mask, Mat &old_gray, Mat &frame_gray, vector<Scalar> colors, vector<int> &sparse){
+Mat evaluate_lucas_kanade_opticalflow(Mat &frame, vector<Point2f> &p0, vector<Point2f> &p1, vector<Point2f> &good_new, Mat &mask, Mat &old_gray, Mat &frame_gray, vector<Scalar> colors, vector<int> &sparse)
+{
     //Mat frame_gray;
     cvtColor(frame, frame_gray, COLOR_BGR2GRAY);
     vector<uchar> status;
     vector<float> err;
     TermCriteria criteria = TermCriteria((TermCriteria::COUNT) + (TermCriteria::EPS), 10, 0.03);
-    calcOpticalFlowPyrLK(old_gray, frame_gray, p0, p1, status, err, Size(15,15), 2, criteria);
+    calcOpticalFlowPyrLK(old_gray, frame_gray, p0, p1, status, err, Size(15, 15), 2, criteria);
     //vector<Point2f> good_new;
-    //We pass the previous frame, previous points and next frame. 
-    //It returns next points along with some status numbers which 
+    //We pass the previous frame, previous points and next frame.
+    //It returns next points along with some status numbers which
     //has a value of 1 if next point is found, else zero
     double euclid = 0.0;
-    for(uint i = 0; i < p0.size(); i++)
+    for (uint i = 0; i < p0.size(); i++)
     {
         // Select good points
-        if(status[i] == 1) {
+        if (status[i] == 1)
+        {
             //status = 1 implies the the point is found
             good_new.push_back(p1[i]);
             // draw the tracks
             //cout <<< p1[i].x << " " << p1[i].y << " " << p0[i].x << " " << p0[i].y << endl;
-            euclid+= sqrt((p1[i].x - p0[i].x) * (p1[i].x - p0[i].x) + (p1[i].y - p0[i].y) * (p1[i].y - p0[i].y)) ;
-            line(mask,p1[i], p0[i], colors[i], 2);
+            euclid += sqrt((p1[i].x - p0[i].x) * (p1[i].x - p0[i].x) + (p1[i].y - p0[i].y) * (p1[i].y - p0[i].y));
+            line(mask, p1[i], p0[i], colors[i], 2);
             circle(frame, p1[i], 5, colors[i], -1);
         }
     }
@@ -191,15 +198,16 @@ Mat evaluate_lucas_kanade_opticalflow(Mat &frame, vector<Point2f> &p0,vector<Poi
     return img;
 }
 
-struct thread_data {
-   Rect crop_region;
-   Mat homo;
+struct thread_data
+{
+    Rect crop_region;
+    Mat homo;
 };
 
 void *process_splitted_frame(void *threadarg)
 {
     struct thread_data *my_data;
-    my_data = (struct thread_data *) threadarg;
+    my_data = (struct thread_data *)threadarg;
     Rect crop_region = my_data->crop_region;
     Mat H = my_data->homo;
     string image1_path = samples::findFile("../assets/empty.jpg");
@@ -241,9 +249,11 @@ void *process_splitted_frame(void *threadarg)
     while (true)
     {
         capture.read(frame);
-        if (frame.empty()) break;
+        if (frame.empty())
+            break;
         framec++;
-        if (framec % processf != 0) continue;
+        if (framec % processf != 0)
+            continue;
         //if (framec % 100 == 0) cout << framec << endl;
         //if (framec > 200) break;
         warpPerspective(frame, frame, H, frame.size());
@@ -276,13 +286,15 @@ void *process_splitted_frame(void *threadarg)
     pthread_exit(NULL);
 }
 
-
-int main(int argc, char const *argv[]){
+int main(int argc, char const *argv[])
+{
     int NUM_THREADS;
-    if (argc < 2){
+    if (argc < 2)
+    {
         NUM_THREADS = 6;
     }
-    else NUM_THREADS = atoi(argv[1]);
+    else
+        NUM_THREADS = atoi(argv[1]);
 
     vector<Point2f> points;
     auto start = high_resolution_clock::now();
@@ -299,33 +311,37 @@ int main(int argc, char const *argv[]){
     pts_dst.push_back(Point2f(points[3].x, points[0].y));
 
     Mat H = findHomography(points, pts_dst);
-    int height_crop = (( points[1].y - points[0].y ) / NUM_THREADS);
+    int height_crop = ((points[1].y - points[0].y) / NUM_THREADS);
 
     pthread_t threads[NUM_THREADS];
     struct thread_data td[NUM_THREADS];
-    for(int it = 0; it < NUM_THREADS; it++ ) {
+    for (int it = 0; it < NUM_THREADS; it++)
+    {
         Rect splitted_crop_region(points[0].x, (points[0].y + height_crop * it), (points[3].x - points[0].x), height_crop);
         td[it].crop_region = splitted_crop_region;
         td[it].homo = H;
-        cout << "main(): Creating thread " << it+1 << endl;
-        int rec_thread = pthread_create(&threads[it], NULL, process_splitted_frame , (void *)&td[it]);
-        if (!rec_thread) {
-            cout << "Successfully created thread" << it+1 << endl;
+        cout << "main(): Creating thread " << it + 1 << endl;
+        int rec_thread = pthread_create(&threads[it], NULL, process_splitted_frame, (void *)&td[it]);
+        if (!rec_thread)
+        {
+            cout << "Successfully created thread" << it + 1 << endl;
         }
-        else{
+        else
+        {
             cout << "Error in creating thread: " << rec_thread << endl;
             exit(-1);
         }
     }
-    for(int it = 0; it < NUM_THREADS; it++) {
+    for (int it = 0; it < NUM_THREADS; it++)
+    {
         pthread_join(threads[it], NULL);
-        cout << "Successfully joined thread: " << it+1 << endl;
+        cout << "Successfully joined thread: " << it + 1 << endl;
     }
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     cout << "Time taken by function with " << NUM_THREADS << " threads is: "
          << duration.count() / 1000000.0 << " seconds" << endl;
-    freopen("../outputs/timetaken.out", "w", stdout);
+    freopen("../../analysis/outputs/timetaken.out", "w", stdout);
     cout << duration.count() / 1000000.0 << endl;
     //cout << queue_y.size() << " " << dynamic_y.size() << endl;
     write_out_queue(queue_y, NUM_THREADS);

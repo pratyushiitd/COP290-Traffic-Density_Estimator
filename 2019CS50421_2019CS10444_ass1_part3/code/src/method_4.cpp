@@ -311,7 +311,7 @@ int main(int argc, char const *argv[])
     auto duration = duration_cast<microseconds>(stop - start);
     cout << "Time taken by function: "
          << duration.count() / 1000000.0 << " seconds" << endl;
-    freopen("../outputs/timetaken.out", "w", stdout);
+    freopen("../../analysis/outputs/timetaken.out", "w", stdout);
     cout << duration.count() / 1000000.0 << endl;
 
     sort(dynamic_y.begin(), dynamic_y.end());

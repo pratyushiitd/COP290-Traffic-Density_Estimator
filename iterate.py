@@ -2,7 +2,7 @@ import os
 import sys
 methodNumber = sys.argv[1]
 if methodNumber == '1':
-    a = [50, 40, 30, 20, 15, 10, 9, 8, 7, 6, 5, 4]
+    a = [700]
 elif methodNumber == '2':
     a = [[200, 100], [200, 250], [3000, 300]]
 elif methodNumber == '3':

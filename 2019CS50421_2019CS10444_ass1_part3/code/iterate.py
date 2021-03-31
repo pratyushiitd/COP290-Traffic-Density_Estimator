@@ -2,9 +2,9 @@ import os
 import sys
 methodNumber = sys.argv[1]
 if methodNumber == '1':
-    parametersArray = [50, 40, 30, 20, 15, 10, 9, 8, 7, 6, 5, 4]
+    parametersArray = [700]
 elif methodNumber == '2':
-    parametersArray = [[200, 100], [200, 250], [3000, 300]]
+    parametersArray = [[200, 100]]
 elif methodNumber == '3':
     parametersArray = [1, 2, 3, 4, 5, 6]
 elif methodNumber == '4':
@@ -38,6 +38,9 @@ for i in parametersArray:
             attach += str(i[0])
         workDir = paramDir+"/"+attach
     os.system('mkdir "'+workDir+"\"")
+    os.system('cd')
+    os.system('ls')
+    a=input()
     os.system('mv ../analysis/outputs/dynamic.out "'+workDir+"\"")
     os.system('mv ../analysis/outputs/static.out "'+workDir+"\"")
     os.system('mv ../analysis/outputs/time.out "'+workDir+"\"")
