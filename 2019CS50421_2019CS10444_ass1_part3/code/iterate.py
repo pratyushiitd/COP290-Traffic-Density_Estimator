@@ -4,9 +4,9 @@ methodNumber = sys.argv[1]
 if methodNumber == '1':
     parametersArray = [700]
 elif methodNumber == '2':
-    parametersArray = [[200, 100]]
+    parametersArray = [[270, 480]]
 elif methodNumber == '3':
-    parametersArray = [1, 2, 3, 4, 5, 6]
+    parametersArray = [2,6]
 elif methodNumber == '4':
     parametersArray = [1, 2, 3, 5, 7, 9]
 elif methodNumber == 'ec':
@@ -40,7 +40,6 @@ for i in parametersArray:
     os.system('mkdir "'+workDir+"\"")
     os.system('cd')
     os.system('ls')
-    a=input()
     os.system('mv ../analysis/outputs/dynamic.out "'+workDir+"\"")
     os.system('mv ../analysis/outputs/static.out "'+workDir+"\"")
     os.system('mv ../analysis/outputs/time.out "'+workDir+"\"")
