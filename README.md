@@ -1,3 +1,7 @@
+Contributors:
+  Anirudha Kulkarni (2019CS50421)
+  Pratyush Saini (2019CS10444)
+
 ## Task1: Traffic density estimation using OpenCV functions
 
 Clone the repo to run locally:
